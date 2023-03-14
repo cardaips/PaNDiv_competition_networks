@@ -42,7 +42,11 @@ pre {
 
 Here will be presented the data analysis attached with "Resource economics traits predict competition network structure and its response to resources and enemies." 
 <br>
+<br>
 In order to run this file, the attached R script "functions_competition_network.R" must be present in the "code" subfolder of the working directory, and all data must be present in a subfolder called "data". An R environment "all_competition_matrices.Rdata" is available in the "data" subfolder, for easy loading, but each matrix is also individually available if needed.
+<br>
+<br>
+To avoid long running time, several Rdata images were also saved in the "result" folder, and can be loaded in the corresponding parts of the script.
 
 # 0. Loading packages, working directory {-}
 
@@ -410,6 +414,8 @@ plot.igraph(g,
 
 # 2. Network metrics for communities of 5 species {-}
 
+First, we computed our 5 network metrics for every community of 5 PaNDiv plant species. We then ran multimembership models and extracted effects of treatment, SLA and SLA variance on the structure of the networks.
+
 ## a. Loading competition matrices {-}
 
 Here is the list of the competition matrices and their transformation (all coefficients were divided by the standard errors obtained from the glmmTMB models), used for the rest of the analysis.
@@ -476,6 +482,204 @@ For an easy load, you can just load "all_competition_matrices.Rdata"
 load(file ="data/all_competition_matrices.Rdata")
 ```
 
+We then plotted the interaction matrices in order to obtain Fig. 1 (here we present August matrices as well).
+
+```{r, plot interaction matrix}
+
+# simple re ordering of the species
+alpha_june_control<-alpha_june_control[c("Am","Sp","Cj","Dc","Pm","Pg","Ao","Be","Fr","Hp",
+                "To","Cb","Ga","Ra","Dg","Hl","Lp","Pt"),]
+alpha_june_control<-alpha_june_control[,c("Am","Sp","Cj","Dc","Pm","Pg","Ao","Be","Fr","Hp",
+                               "To","Cb","Ga","Ra","Dg","Hl","Lp","Pt")]
+
+alpha_june_nitrogen<-alpha_june_nitrogen[c("Am","Sp","Cj","Dc","Pm","Pg","Ao","Be","Fr","Hp",
+                               "To","Cb","Ga","Ra","Dg","Hl","Lp","Pt"),]
+alpha_june_nitrogen<-alpha_june_nitrogen[,c("Am","Sp","Cj","Dc","Pm","Pg","Ao","Be","Fr","Hp",
+                                "To","Cb","Ga","Ra","Dg","Hl","Lp","Pt")]
+
+alpha_june_fungicide<-alpha_june_fungicide[c("Am","Sp","Cj","Dc","Pm","Pg","Ao","Be","Fr","Hp",
+                               "To","Cb","Ga","Ra","Dg","Hl","Lp","Pt"),]
+alpha_june_fungicide<-alpha_june_fungicide[,c("Am","Sp","Cj","Dc","Pm","Pg","Ao","Be","Fr","Hp",
+                                "To","Cb","Ga","Ra","Dg","Hl","Lp","Pt")]
+
+alpha_june_combined<-alpha_june_combined[c("Am","Sp","Cj","Dc","Pm","Pg","Ao","Be","Fr","Hp",
+                               "To","Cb","Ga","Ra","Dg","Hl","Lp","Pt"),]
+alpha_june_combined<-alpha_june_combined[,c("Am","Sp","Cj","Dc","Pm","Pg","Ao","Be","Fr","Hp",
+                                "To","Cb","Ga","Ra","Dg","Hl","Lp","Pt")]
+
+alpha_august_control<-alpha_august_control[c("Am","Sp","Cj","Dc","Pm","Pg","Ao","Be","Fr","Hp",
+                               "To","Cb","Ga","Ra","Dg","Hl","Lp","Pt"),]
+alpha_august_control<-alpha_august_control[,c("Am","Sp","Cj","Dc","Pm","Pg","Ao","Be","Fr","Hp",
+                                "To","Cb","Ga","Ra","Dg","Hl","Lp","Pt")]
+
+alpha_august_nitrogen<-alpha_august_nitrogen[c("Am","Sp","Cj","Dc","Pm","Pg","Ao","Be","Fr","Hp",
+                                 "To","Cb","Ga","Ra","Dg","Hl","Lp","Pt"),]
+alpha_august_nitrogen<-alpha_august_nitrogen[,c("Am","Sp","Cj","Dc","Pm","Pg","Ao","Be","Fr","Hp",
+                                  "To","Cb","Ga","Ra","Dg","Hl","Lp","Pt")]
+
+alpha_august_fungicide<-alpha_august_fungicide[c("Am","Sp","Cj","Dc","Pm","Pg","Ao","Be","Fr","Hp",
+                                   "To","Cb","Ga","Ra","Dg","Hl","Lp","Pt"),]
+alpha_august_fungicide<-alpha_august_fungicide[,c("Am","Sp","Cj","Dc","Pm","Pg","Ao","Be","Fr","Hp",
+                                    "To","Cb","Ga","Ra","Dg","Hl","Lp","Pt")]
+
+alpha_august_combined<-alpha_august_combined[c("Am","Sp","Cj","Dc","Pm","Pg","Ao","Be","Fr","Hp",
+                                 "To","Cb","Ga","Ra","Dg","Hl","Lp","Pt"),]
+alpha_august_combined<-alpha_august_combined[,c("Am","Sp","Cj","Dc","Pm","Pg","Ao","Be","Fr","Hp",
+                                  "To","Cb","Ga","Ra","Dg","Hl","Lp","Pt")]
+
+
+#define the color of each species to differentiate fast from slow growing species
+colorsp<-c("turquoise4","turquoise4","turquoise4","turquoise4","turquoise4","turquoise4","turquoise4",
+           "turquoise4","turquoise4","turquoise4","chartreuse4","chartreuse4","chartreuse4","chartreuse4","chartreuse4","chartreuse4",
+           "chartreuse4","chartreuse4")
+
+# first, format the matrix in the long format for ggplot2
+plot_alpha_june_control<-melt.array(alpha_june_control)
+plot_alpha_june_control$value<-c(alpha_june_control)
+plot_alpha_june_control<-plot_alpha_june_control[plot_alpha_june_control$value!=0,]
+
+# then we plotted the interaction matrix for June Control
+contju<-ggplot(plot_alpha_june_control, 
+               aes(x = X1, y = X2)) + 
+  geom_raster(aes(fill=value)) + 
+  scale_fill_gradient2(low="darkblue",
+                       mid = "white", 
+                       high="red", 
+                       limits=c(-12,4)) +
+  labs(x="species", 
+       y="species", 
+       title="June Control") +
+  theme_bw() + 
+  theme(axis.text.x=element_text(size=9, 
+                                 angle=0, 
+                                 vjust=0.3, 
+                                 color = colorsp),
+        axis.text.y=element_text(size=9, 
+                                 color = rev(colorsp)),
+        plot.title=element_text(size=11))+
+  scale_y_discrete(limits = rev)+
+  scale_x_discrete(position = "top") 
+
+# then, similarly for the other treatments and season...
+plot_alpha_june_nitrogen<-melt.array(alpha_june_nitrogen)
+plot_alpha_june_nitrogen<-plot_alpha_june_nitrogen[plot_alpha_june_nitrogen$value!=0,]
+
+niju<-ggplot(plot_alpha_june_nitrogen, aes(x = X1, y = X2)) + 
+  geom_raster(aes(fill=value)) + 
+  scale_fill_gradient2(low="darkblue",mid = "white", high="red", limits=c(-12,4)) +
+  labs(x="species", y="species", title="June Nitrogen") +
+  theme_bw() + theme(axis.text.x=element_text(size=9, 
+                                 angle=0, 
+                                 vjust=0.3, 
+                                 color = colorsp),
+        axis.text.y=element_text(size=9, 
+                                 color = rev(colorsp)),
+                     axis.ticks.y = element_blank(),
+                     axis.title.y = element_blank(),
+                     plot.title=element_text(size=11),)+
+  scale_y_discrete(limits = rev)+scale_x_discrete(position = "top") 
+
+plot_alpha_june_fungicide<-melt.array(alpha_june_fungicide)
+plot_alpha_june_fungicide<-plot_alpha_june_fungicide[plot_alpha_june_fungicide$value!=0,]
+
+funju<-ggplot(plot_alpha_june_fungicide, aes(x = X1, y = X2)) + 
+  geom_raster(aes(fill=value)) + 
+  scale_fill_gradient2(low="darkblue",mid = "white", high="red", limits=c(-12,4)) +
+  labs(x="species", y="species", title="June Fungicide") +
+  theme_bw() + theme(axis.text.x=element_text(size=9, 
+                                 angle=0, 
+                                 vjust=0.3, 
+                                 color = colorsp),
+                     axis.ticks.x = element_blank(),
+                     axis.text.y=element_text(size=9, color = rev(colorsp)),
+                     axis.title.x = element_blank(),
+                     plot.title=element_text(size=11))+
+  scale_y_discrete(limits = rev)+scale_x_discrete(position = "top") 
+
+plot_alpha_june_combined<-melt.array(alpha_june_combined)
+plot_alpha_june_combined<-plot_alpha_june_combined[plot_alpha_june_combined$value!=0,]
+
+combju<-ggplot(plot_alpha_june_combined, aes(x = X1, y = X2)) + 
+  geom_raster(aes(fill=value)) + 
+  scale_fill_gradient2(low="darkblue",mid = "white", high="red", limits=c(-12,4)) +
+  labs(x="species", y="species", title="June Combined") +
+  theme_bw() + theme(axis.text.x=element_text(size=9, 
+                                 angle=0, 
+                                 vjust=0.3, 
+                                 color = colorsp),
+        axis.text.y=element_text(size=9, 
+                                 color = rev(colorsp)),
+                     axis.ticks.y = element_blank(),
+                     axis.ticks.x = element_blank(),
+                     axis.title.x = element_blank(),
+                     axis.title.y = element_blank(),
+                     plot.title=element_text(size=11))+
+  scale_y_discrete(limits = rev)+scale_x_discrete(position = "top") 
+
+plot_alpha_august_control<-melt.array(alpha_august_control)
+plot_alpha_august_control<-plot_alpha_august_control[plot_alpha_august_control$value!=0,]
+
+
+contau<-ggplot(plot_alpha_august_control, aes(x = X1, y = X2)) + 
+  geom_raster(aes(fill=value)) + 
+  scale_fill_gradient2(low="darkblue",mid = "white", high="red", limits=c(-12,4)) +
+  labs(x="species", y="species", title="August control") +
+  theme_bw() + theme(axis.text.x=element_text(size=9, angle=0, vjust=0.3, color = colorsp),
+                     axis.text.y=element_text(size=9, color = rev(colorsp)),
+                     axis.title.y = element_blank(),
+                     plot.title=element_text(size=11))+
+  scale_y_discrete(limits = rev)+scale_x_discrete(position = "top") 
+
+plot_alpha_august_nitrogen<-melt.array(alpha_august_nitrogen)
+plot_alpha_august_nitrogen<-plot_alpha_august_nitrogen[plot_alpha_august_nitrogen$value!=0,]
+
+niau<-ggplot(plot_alpha_august_nitrogen, aes(x = X1, y = X2)) + 
+  geom_raster(aes(fill=value)) + 
+  scale_fill_gradient2(low="darkblue",mid = "white", high="red", limits=c(-12,4)) +
+  labs(x="species", y="species", title="August nitrogen") +
+  theme_bw() + theme(axis.text.x=element_text(size=9, angle=0, vjust=0.3, color = colorsp),
+                     axis.text.y=element_text(size=9, color = rev(colorsp)),
+                     axis.title.y = element_blank(),
+                     axis.title.x = element_blank(),
+                     plot.title=element_text(size=11))+
+  scale_y_discrete(limits = rev)+scale_x_discrete(position = "top") 
+
+plot_alpha_august_fungicide<-melt.array(alpha_august_fungicide)
+plot_alpha_august_fungicide<-plot_alpha_august_fungicide[plot_alpha_august_fungicide$value!=0,]
+
+funau<-ggplot(plot_alpha_august_fungicide, aes(x = X1, y = X2)) + 
+  geom_raster(aes(fill=value)) + 
+  scale_fill_gradient2(low="darkblue",mid = "white", high="red", limits=c(-12,4)) +
+  labs(x="species", y="species", title="August fungicide") +
+  theme_bw() + theme(axis.text.x=element_text(size=9, angle=0, vjust=0.3, color = colorsp),
+                     axis.text.y=element_text(size=9, color = rev(colorsp)),
+                     axis.title.y = element_blank(),
+                     axis.title.x = element_blank(),
+                     plot.title=element_text(size=11))+
+  scale_y_discrete(limits = rev)+scale_x_discrete(position = "top") 
+
+plot_alpha_august_combined<-melt.array(alpha_august_combined)
+plot_alpha_august_combined<-plot_alpha_august_combined[plot_alpha_august_combined$value!=0,]
+
+combau<-ggplot(plot_alpha_august_combined, aes(x = X1, y = X2)) + 
+  geom_raster(aes(fill=value)) + 
+  scale_fill_gradient2(low="darkblue",mid = "white", high="red", limits=c(-12,4)) +
+  labs(x="species", y="species", title="August combined") +
+  theme_bw() + theme(axis.text.x=element_text(size=9, angle=0, vjust=0.3, color = colorsp),
+                     axis.text.y=element_text(size=9, color = rev(colorsp)),
+                     axis.title.y = element_blank(),
+                     axis.title.x = element_blank(),
+                     plot.title=element_text(size=11))+
+  scale_y_discrete(limits = rev)+scale_x_discrete(position = "top") 
+
+```
+
+```{r, figure 1 interaction matrices, fig.width = 8, fig.height = 14, fig.align ='center', echo = FALSE}
+
+ggarrange(contju, niju, funju, combju, contau,niau, funau, combau, common.legend = T, ncol = 2, nrow =4)
+
+```
+
 ## b. Loading SLA data {-}
 
 In order to distinguish fast growing species from slow growing species, we used data on the specific leaf area gathered on PaNDiv experiment monocultures in 2019. We log transformed the value in order to remove the correlation between mean SLA and variance SLA.
@@ -519,7 +723,7 @@ source("code/function_competition_network.R")
 
 In order to optimize the time of code running, we removed the unnecessary combinations (only fast or only slow in mixed data), and we set parallel computing (packages "doparallel" and "parallel").
 
-``` {r, optimizing in the long run}
+``` {r, optimizing in the long run, eval = FALSE}
 
 #remove all fast and all slow network from mixed communities
 mixdat<-removeidentical(mixdat,slowdat) # personal function from "function_competition_network.R"
@@ -533,7 +737,7 @@ registerDoParallel(numCores/2-1) #important: define parallel computation to numC
 
 ## d. Calculate network metrics for each community {-}
 
-The following code calculates all network metrics for each combo of 5 species (or any other input of richness value). **This code takes more than 2 hours to run**, if you are only interested in the output, you can load it directly from below.
+The following code calculates all network metrics for each combo of 5 species (or any other input of richness value). **This code takes more than 30 min to run**, if you are only interested in the output, you can load it directly from below.
 
 ```{r, very long code, getting all network metrics, eval = FALSE}
 
@@ -542,7 +746,7 @@ all<-list(alpha_june_control,alpha_june_nitrogen,alpha_june_fungicide,alpha_june
 names(all)<-c("June C", "June N", "June F", "June NF", "August C", "August N", "August F", "August NF")
 
 #compute all network metrics for networks of mixed SLA
-mixnet<-networkmetrics(mixdat) # /!\ WARNING : takes 2 hours to run (output directly available below)
+mixnet<-networkmetrics(mixdat) # /!\ WARNING : takes 30 minutes to run (output directly available below)
 speciesmixed<-mixnet[[2]]
 mixnet<-mixnet[[1]]
 mixnet$Communities<-"Mixed"
@@ -565,17 +769,513 @@ save.image(file = "results/network_metrics_5_species.Rdata")
 
 Here is the environment where the output is saved for networks of 5 species:
 
-``` {r, network metrics output, eval = FALSE}
+``` {r, network metrics output, eval = TRUE}
 
 load(file ="results/network_metrics_5_species.Rdata")
+
+# WARNING : important, binds all communities in a single data frame
+comp<-rbind(slownet, mixnet, fastnet)
 
 ```
 
 ## e. Scaling variables, formatting treatments, and matrix of species presence/absence {-}
 
+Once we obtained the data frame with all network metrics for every community, we scaled the variable in order to compare their effect sizes in the multimembership models.
+``` {r, scaling variables}
+
+savecomp<-comp # save the competition data frame before scaling just in case
+
+#scaling all variables
+comp$Modularity<-scale(comp$Modularity, center = T)
+comp$Diagstrength<-scale(comp$Diagstrength, center = T)
+comp$Asymmetry<-scale(comp$Asymmetry, center = T)
+comp$Skewness<-scale(comp$Skewness, center = T)
+comp$Gini<-scale(comp$Gini, center = T)
+comp$SLAv<-scale(comp$SLAv, center = T)
+comp$SLA<-scale(comp$SLA, center = T)
+
+``` 
+
+We also transformed treatment in a two level factor (for both Nitrogen and Fungicide).
+
+``` {r, format treatment}
+
+comp$Nitrogen<-NA
+comp$Fungicide<-NA
+for (i in 1:nrow(comp)) {
+  if (comp$Treatment[i] == "N" | comp$Treatment[i] =="NF") {
+    comp$Nitrogen[i]<- 1
+  }
+  else  {
+    comp$Nitrogen[i]<- 0
+  }
+  if (comp$Treatment[i] == "F" | comp$Treatment[i] =="NF") {
+    comp$Fungicide[i]<- 1
+  }
+  else {
+    comp$Fungicide[i]<- 0
+  }
+  
+}
+comp$Nitrogen<-as.factor(comp$Nitrogen)
+comp$Fungicide<-as.factor(comp$Fungicide)
+
+``` 
+
+And finally, we built a presence / absence matrix in order to run multimemberships models with presence / absence data as random factors.
+
+``` {r, build the matrix of species presence/absence}
+
+speciesmat<-speciesmixed[rep(rownames(speciesmixed),8),] # in speciesmixed was saved the community species names, it is repeated 8 times because we have 4 treatment x 2 seasons = 8 matrices
+fastmat<-speciesfast[rep(rownames(speciesfast),8),]
+slowmat<-speciesslow[rep(rownames(speciesslow),8),]
+speciesmat<-rbind(slowmat,speciesmat,fastmat)
+rownames(speciesmat)<-NULL
+
+# bind the presence/absence matrix to the overall data frame
+comp<-cbind(comp,speciesmat)
+``` 
 
 ## f. Multi-membership modelling applied to the communities {-}
 
+We then applied multimembership models to our "comp" dataset. To do so, we need to create a variable that will be a placeholder random factor for our presence / abscence matrix
+
+```{r, initialising multimembership models }
+
+#fake random factor with 18 levels, for 18 species
+Species <- rep(LETTERS[1:18], length.out= nrow(comp))
+comp$Species<-Species
+
+```
+
+Running the models and their prediction **takes about 45 min**, if you are just interested in the output, you can load the image file below.
+
+- Diagonal dominance (D)
+``` {r,multimembership model diagonal dominance, eval = FALSE}
+
+#Diagonal dominance
+# WARNING : running  multi-membership model + prediction takes ~ 10 min for each variable
+# input from model formula, here my response is Diagonal dominance, SLA and SLA variance  + treatment as explanatory variables, Species is random
+lmod <- lFormula(Diagstrength~Nitrogen*Fungicide*(SLA+SLAv)+Season*(SLA+SLAv)+(1|Species), data=comp)
+# I modified the random factor by introducing "speciesmat" which is a presence/absence matrix of PaNDiv species in my communities of 5 plant species.
+lmod$reTrms$Zt <- lmod$reTrms$Ztlist[[1]] <- Matrix(t(speciesmat))
+# preparing to run the optimisation of the lmer
+devfun <- do.call(mkLmerDevfun, lmod)
+# optimising per se
+opt <- optimizeLmer(devfun)
+# run the optimisation and save the model into a variable called m1, m2,... to m5 -> important !
+m2 <- mkMerMod(environment(devfun), opt, lmod$reTrms, fr = lmod$fr)
+
+datapred<-slapred(m2,comp) # takes two-three minutes to run, personal function defined in "function_competition_network.R"
+#average across seasons for more clarity
+datapred<-aggregate(cbind(fit,lwr,upr)~SLA+Treatment,FUN=mean,data= datapred)
+datavpred<-slavpred(m2,comp) # takes two-three minutes to run
+#average across seasons for more clarity
+datavpred<-aggregate(cbind(fit,lwr,upr)~SLAv+Treatment,FUN=mean,data= datavpred)
+
+diagpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
+  geom_line(size=0.8)+
+  geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
+  ylab("Diagonal dominance")+
+  xlab(" ")+
+  theme_bw()
+
+diagvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
+  geom_line(size=0.8)+
+  geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
+  xlab(" ")+
+  theme_bw()
+
+```
+
+- Asymmetry (A)
+``` {r,multimembership model asymmetry, eval = FALSE}
+
+#Asymmetry
+lmod <- lFormula(Asymmetry~Nitrogen*Fungicide*(SLA+SLAv)+Season*(SLA+SLAv)+(1|Species), data=comp)
+lmod$reTrms$Zt <- lmod$reTrms$Ztlist[[1]] <- Matrix(t(speciesmat))
+devfun <- do.call(mkLmerDevfun, lmod)
+opt <- optimizeLmer(devfun)
+m3 <- mkMerMod(environment(devfun), opt, lmod$reTrms, fr = lmod$fr)
+
+datapred<-slapred(m3,comp)
+#average across seasons for more clarity
+datapred<-aggregate(cbind(fit,lwr,upr)~SLA+Treatment,FUN=mean,data= datapred)
+datavpred<-slavpred(m3,comp) #takes two-three minutes each to run
+#average across seasons for more clarity
+datavpred<-aggregate(cbind(fit,lwr,upr)~SLAv+Treatment,FUN=mean,data= datavpred)
+
+datapredb<-subset(datapred, datapred$Treatment=="Control"|datapred$Treatment=="Nitrogen"|datapred$Treatment=="Fungicide")
+
+asympred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
+  geom_line(size=0.8)+
+  geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
+  ylim(c(-0.70,0.7))+
+  ylab("Asymmetry")+
+  xlab(" ")+
+  theme_bw()
+
+
+asymvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
+  geom_line(size=0.8)+
+  geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
+  ylim(c(-0.7,0.7))+
+  xlab(" ")+
+  theme_bw()
+
+
+```
+
+- Skewness (</span>&gamma;</span>)
+``` {r,multimembership model skewness, eval = FALSE}
+
+#Skewness
+lmod <- lFormula(Skewness~Nitrogen*Fungicide*(SLA+SLAv)+Season*(SLA+SLAv)+(1|Species), data=comp)
+lmod$reTrms$Zt <- lmod$reTrms$Ztlist[[1]] <- Matrix(t(speciesmat))
+devfun <- do.call(mkLmerDevfun, lmod)
+opt <- optimizeLmer(devfun)
+m4 <- mkMerMod(environment(devfun), opt, lmod$reTrms, fr = lmod$fr)
+
+datapred<-slapred(m4,comp)
+#average across seasons for more clarity
+datapred<-aggregate(cbind(fit,lwr,upr)~SLA+Treatment,FUN=mean,data= datapred)
+datavpred<-slavpred(m4,comp) #takes two-three minutes each to run
+#average across seasons for more clarity
+datavpred<-aggregate(cbind(fit,lwr,upr)~SLAv+Treatment,FUN=mean,data= datavpred)
+
+skewpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
+  geom_line(size=0.8)+
+  geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
+  ylim(c(-1.5,1.5))+
+  ylab("Skewness")+
+  xlab(" ")+
+  theme_bw()
+
+skewvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
+  geom_line(size=0.8)+
+  geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+  
+  ylim(c(-1.5,1.5))+
+  xlab(" ")+
+  theme_bw()
+
+```
+
+- Evenness (1-G)
+``` {r,multimembership model evenness, eval = FALSE}
+
+#Evenness
+lmod <- lFormula(1-Gini~Nitrogen*Fungicide*(SLA+SLAv)+Season*(SLA+SLAv)+(1|Species), data=comp)
+lmod$reTrms$Zt <- lmod$reTrms$Ztlist[[1]] <- Matrix(t(speciesmat))
+devfun <- do.call(mkLmerDevfun, lmod)
+opt <- optimizeLmer(devfun)
+m5 <- mkMerMod(environment(devfun), opt, lmod$reTrms, fr = lmod$fr)
+
+datapred<-slapred(m5,comp)
+#average across seasons for more clarity
+datapred<-aggregate(cbind(fit,lwr,upr)~SLA+Treatment,FUN=mean,data= datapred)
+datavpred<-slavpred(m5,comp) #takes two-three minutes each to run
+#average across seasons for more clarity
+datavpred<-aggregate(cbind(fit,lwr,upr)~SLAv+Treatment,FUN=mean,data= datavpred)
+
+datapredb<-subset(datapred, datapred$Treatment=="Control"|datapred$Treatment=="Nitrogen"|datapred$Treatment=="Fungicide")
+
+ginipred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
+  ylim(c(-0.5,2.5))+
+  geom_line(size=0.8)+
+  geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
+  ylab("Evenness")+
+  xlab(" ")+
+  theme_bw()
+
+ginivpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
+  ylim(c(-0.5,2.5))+
+  geom_line(size=0.8)+
+  geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
+  xlab(" ")+
+  theme_bw()
+
+```
+
+- Modularity (M)
+``` {r,multimembership model modularity, eval = FALSE}
+
+#Modularity
+lmod <- lFormula(Modularity~Nitrogen*Fungicide*(SLA+SLAv)+Season*(SLA+SLAv)+(1|Species), data=comp)
+lmod$reTrms$Zt <- lmod$reTrms$Ztlist[[1]] <- Matrix(t(speciesmat))
+devfun <- do.call(mkLmerDevfun, lmod)
+opt <- optimizeLmer(devfun)
+m1 <- mkMerMod(environment(devfun), opt, lmod$reTrms, fr = lmod$fr)
+
+datapred<-slapred(m1,comp)
+#average across seasons for more clarity
+datapred<-aggregate(cbind(fit,lwr,upr)~SLA+Treatment,FUN=mean,data= datapred)
+datavpred<-slavpred(m1,comp) #takes two-three minutes each to run
+#average across seasons for more clarity
+datavpred<-aggregate(cbind(fit,lwr,upr)~SLAv+Treatment,FUN=mean,data= datavpred)
+
+modupred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
+  ylim(c(-2,2))+
+  geom_line(linewidth=0.8)+
+  geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
+  ylab("Modularity")+
+  theme_bw()
+
+moduvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
+  geom_line(linewidth=0.8)+
+  ylim(c(-2,2))+
+  geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
+  xlab("SLA variance")+
+  theme_bw()
+
+#saving the models and predictions in an R environment
+save.image(file = "results/multimembership_results_5_species.Rdata")
+
+```
+
+Here is the direct output of the multimembership models and predictions:
+
+```{r, load the results for plotting model predictions }
+
+load(file ="results/multimembership_results_5_species.Rdata")
+
+```
+
+With the model predictions we can plot Fig.2,
+
+```{r, plot of fig. 2, fig.width = 8, fig.height = 14, fig.align ='center', echo = FALSE }
+ggarrange(diagpred,diagvpred, 
+          asympred,asymvpred, 
+          skewpred,skewvpred,
+          ginipred,ginivpred, 
+          modupred,moduvpred,
+          common.legend = T, label.x = " ", ncol=2,nrow=5)
+```
+
+Then, with the model outputs we can also plot the effects sizes (Fig. 3)
+
+```{r, plot of fig. 3, fig.width = 14, fig.height = 8, fig.align ='center' }
+# summarise the model outputs
+models<- list(m2,m3,m4,m5,m1)
+models<-dvnames(models)
+# rename models with explicit network metric names
+names(models)<-c("Diagonal dominance", "Asymmetry", "Skewness", "Evenness", "Modularity")
+
+# re-ordering the explanatory variables and intercept and giving them better names
+cm<-c("SLAv:SeasonAugust" = "SLA variance x August",
+      "SLA:SeasonAugust" = "SLA x August",
+      "SeasonAugust" ="August",
+      "Nitrogen1:Fungicide1:SLAv" ="Nitrogen x Fungicide x SLA variance",
+      "Fungicide1:SLAv" = "Fungicide x SLA variance",
+      "Nitrogen1:SLAv" = "Nitrogen x SLA variance",
+      "SLAv"= "SLA variance",
+      "Nitrogen1:Fungicide1:SLA" = "Nitrogen x Fungicide x SLA",
+      "Fungicide1:SLA" = "Fungicide x SLA",
+      "Nitrogen1:SLA" = "Nitrogen x SLA",
+      "SLA"="SLA",
+      "Nitrogen1:Fungicide1" = "Nitrogen x Fungicide",
+      "Fungicide1"="Fungicide",
+      "Nitrogen1"="Nitrogen")
+
+# define color vector for plotting
+cbp2 <- c( "salmon", "salmon2", "salmon3",
+                   "salmon4","sienna4")
+                   
+# saving plot in a g1 ggplot
+g1<-modelplot(models, 
+              coef_omit = "Interc", 
+              coef_map = cm)+
+  aes(alpha = ifelse(estimate > 0.1 | estimate <(-0.1), 
+                     "Strong effect ( | x | > 0.1)", 
+                     "Weak effect ( | x | < 0.1)"),
+      shape = ifelse(p.value > 0.05,
+                     "Not significant", 
+                     "Significant")) +
+  scale_colour_manual(values=cbp2)+
+  facet_grid(~model)+
+  geom_vline(xintercept=0)+
+  scale_alpha_manual(values = c(1,0.25))+
+  scale_shape_manual(values = c(4,19))+
+  xlim(c(-1,1))+
+  guides(color = "none")
+
+g1
+
+
+```
+
+
+## g. Individual species effect {-}
+
+``` {r, fungicide competition response versus cover }
+
+dat2020 <- read.table("data/202005_perco.txt", sep = "\t", header = T)
+
+#changing names to same format and deleting useless columns
+names(dat2020)[names(dat2020)=="Datum"]<-"datum"
+names(dat2020)[names(dat2020)=="Plot_Nr"]<-"plot"
+names(dat2020)[names(dat2020)=="Weed_species"]<-"species"
+
+dat2020$Person<-NULL
+dat2020$Block<-NULL
+dat2020$original_species_in_non_VIP<-NULL
+dat2020$Comments<-NULL
+
+
+#simplifying dates (all are august covers)
+dat2020$datum<-2020
+
+#2020 table
+datot20<-matrix(data=0, nrow=336, ncol=26, byrow = F, dimnames = NULL)
+colnames(datot20)<-c("year","plot","Am","Ao","As","Be","Cb","Cj","Dc","Dg","Fr","Ga","Hl","Hp","Hs","Lp","Pg","Pm","Pt","Ra","Sp","To","bg", "legume","herb","grass")
+datot20<-as.data.frame(datot20)
+dat2020<-as.data.frame(dat2020)
+dat2020<-dat2020[order(dat2020$plot),]
+
+#loop for filling 2020 table
+i<-1
+j<-1
+k<-1
+datot20$plot[i]<-i
+datot20$year[i]<-2020
+
+datot20<-tryCatch({
+for (i in 1:nrow(datot20)){
+  for (k in 1:nrow(dat2020)) {
+    while (datot20$plot[i]==dat2020$plot[k]) {
+      for (j in 1:ncol(datot20)) {
+        if (colnames(datot20)[j]==dat2020$species[k]){
+          datot20[i,j]<-dat2020$X.weeded[k]
+          j<-j+1
+        }
+        else{
+          j<-j+1
+        }
+      }
+      k<-k+1
+      j<-1
+    }
+  }
+  i<-i+1
+  datot20$plot[i]<-i
+  datot20$year[i]<-2020
+}
+},
+error = function (e) {
+  return(datot20)
+})
+
+datot20$sum<-rowSums(datot20[,3:26])
+
+rel.cov20<-datot20[,3:26]
+rel.cov20<-rel.cov20/datot20$sum
+rel.cov20$plot<-datot20$plot
+
+info<-read.table("data/plot_all.txt", sep = "\t", header = T)
+rel.cov20$Nitrogen<-info$N
+rel.cov20$Fungicide<-info$F
+
+test<-rel.cov20[1:24]
+test[test==0]<-NA
+test$Fungicide<-rel.cov20$Fungicide
+test$Nitrogen<-rel.cov20$Nitrogen
+
+amatrix<-colSums(alpha_june_control)
+bmatrix<-rowSums(alpha_june_control)
+ctest<-subset(test, test$Fungicide==0)
+cm<-colMeans(ctest, na.rm=T)
+ftest<-subset(test, test$Fungicide==1)
+fm<-colMeans(ftest, na.rm=T)
+
+diff<-fm-cm
+diff$Hs<-NA
+diff$As<-NA
+diff<-diff[!is.na(diff)]
+diff<-unlist(diff,use.names=T)
+diff<-diff[1:18]
+diff<-diff[order(names(diff))]
+amatrix<-amatrix[order(names(amatrix))]
+bmatrix<-bmatrix[order(names(bmatrix))]
+x<-data.frame(diff=diff,amatrix=amatrix,bmatrix=bmatrix)
+
+#x[10,]<-NA #remove the 2 extremes ? still significant
+#x[1,]<-NA
+
+x<-na.omit(x)
+model<-lm(data=x,diff~bmatrix)
+summary(model)
+
+```
+
+```{r,plot supplementary figure 5, fig.align ='center', fig.height=10, fig.width=10, echo = FALSE}
+
+plot(x$diff~x$bmatrix, xlab= "Competitive response", ylab = "Change in %cover with Fungicide")
+text(x$diff~x$bmatrix,labels=row.names(x),pos=4)
+abline(model)
+
+```
+
+```{r, species effect and response versus treatment}
+
+#difference of competitive effect by species with treatment
+bmatrix<-rowSums(alpha_june_control)
+bmatrixn<-rowSums(alpha_june_nitrogen)
+bmatrixf<-rowSums(alpha_june_fungicide)
+bmatrixnf<-rowSums(alpha_june_combined)
+bmatrixall<-data.frame(bmatrix,bmatrixn,bmatrixf, bmatrixnf)
+matsp<-rownames(bmatrixall)
+bmatrixall<-data.frame(bmatrix,bmatrixn,bmatrixf,bmatrixnf,matsp)
+bmatrixall[6,]<-NA #check if holcus is driving the pattern
+
+effect<-ggplot(data=bmatrixall,aes(x=bmatrix,y=bmatrixn))+
+  geom_smooth(aes(x=bmatrix,y=bmatrixn),method="lm",color="#7CAE00", alpha=0.3, fill="lightgray", linetype="dashed")+
+  geom_smooth(aes(x=bmatrix,y=bmatrixf),method="lm",color="#00BFC4", fill="lightgray", alpha=0.3, linetype="dashed")+
+  geom_smooth(aes(x=bmatrix,y=bmatrixnf),method="lm",color="#C77CFF", fill="lightgray", alpha=0.3, linetype="dashed")+
+  geom_point(color="#7CAE00")+
+  geom_text(aes(label=matsp),color="#7CAE00", hjust=1.5)+
+  geom_point(aes(x=bmatrix,y=bmatrixf), color="#00BFC4")+
+  geom_text(aes(x=bmatrix,y=bmatrixf,label=matsp), color="#00BFC4", hjust=1.5)+
+  geom_point(aes(x=bmatrix,y=bmatrixnf), color="#C77CFF")+
+  geom_text(aes(x=bmatrix,y=bmatrixnf,label=matsp), color="#C77CFF", hjust=1.5)+
+  geom_abline(intercept = 0, slope=1)+
+  xlim(c(-90,10))+ylim(c(-90,10))+
+  labs(title = "Changes in competitive effect with treatment June 2020", 
+       y="Competitive change with treatment : Nitrogen (green), Fungicide (blue), Combined (purple)", x="Competitive effect in control conditions")+
+  scale_fill_manual(values = c("#7CAE00","#00BFC4"), labels=c("Nitrogen","Fungicide"),drop=FALSE)+
+  theme_clean()+
+  theme(plot.background=element_blank())
+
+amatrix<-colSums(alpha_june_control)
+amatrixn<-colSums(alpha_june_nitrogen)
+amatrixf<-colSums(alpha_june_fungicide)
+amatrixnf<-colSums(alpha_june_combined)
+amatrixall<-data.frame(amatrix,amatrixn,amatrixf,amatrixnf)
+matsp<-rownames(amatrixall)
+amatrixall<-data.frame(amatrix,amatrixn,amatrixf, amatrixnf, matsp)
+
+response<-ggplot(data=amatrixall,aes(x=amatrix,y=amatrixn))+
+  geom_smooth(method="lm",color="#7CAE00", fill="lightgray", alpha=0.3, linetype="dashed")+
+  geom_smooth(aes(x=amatrix,y=amatrixf),method="lm",color="#00BFC4", fill="lightgray", alpha=0.3, linetype="dashed")+
+  geom_smooth(aes(x=amatrix,y=amatrixnf),method="lm",color="#C77CFF", fill="lightgray", alpha=0.3, linetype="dashed")+
+  geom_point(color="#7CAE00")+
+  geom_text(aes(label=matsp),color="#7CAE00", hjust=1.5)+
+  geom_point(aes(x=amatrix,y=amatrixf), color="#00BFC4")+
+  geom_text(aes(x=amatrix,y=amatrixf,label=matsp), color="#00BFC4", hjust=1.5)+
+  geom_point(aes(x=amatrix,y=amatrixnf), color="#C77CFF")+
+  geom_text(aes(x=amatrix,y=amatrixnf,label=matsp), color="#C77CFF", hjust=1.5)+
+  geom_abline(intercept = 0, slope=1)+
+  xlim(c(-90,10))+ylim(c(-90,10))+
+  labs(title = "Changes in competitive response with treatment June 2020", 
+       y=" ", x="Competitive response in control conditions")+
+  scale_color_manual(name="Treatments",values = c("#7CAE00","#00BFC4"), breaks=c("Nitrogen","Fungicide"))+
+  theme_clean()+
+  theme(plot.background=element_blank())
+```
+
+```{r, plot supplementary figure 6, fig.align ='center', fig.width=13, fig.height=8, echo = FALSE}
+
+ggarrange(effect, response)
+
+```
 
 # 3. Network metrics for communities of 5, 7, 11 and 15 species {-}
 
