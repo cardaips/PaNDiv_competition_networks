@@ -1,0 +1,581 @@
+---
+title: "PaNdiv experiment, competition network analysis"
+author: "Caroline Daniel"
+date: "`r Sys.Date()`"
+output: 
+  rmdformats::readthedown:
+    toc_depth: 4
+    toc_float: true
+    number_sections: true
+    smooth_scroll: true
+    code_folding: show
+    highlight: "kate"
+    self_contained: true
+    lightbox: true
+    gallery: true
+    css: custom.css 
+  pkgdown:
+  as_is: true 
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      message = FALSE, 
+                      warning = FALSE,
+                      root.dir = "/code") # /!\ WARNING : make sure the knit directory is the project directory and not the document directory, it can be changed in knit options
+options(knitr.duplicate.label = "allow")
+```
+
+```{css, echo=FALSE}
+
+pre {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.scroll-200 {
+  max-height: 300px;
+  overflow-y: auto;
+  background-color: inherit;
+}
+```
+
+Here will be presented the data analysis attached with "Resource economics traits predict competition network structure and its response to resources and enemies." 
+<br>
+In order to run this file, the attached R script "functions_competition_network.R" must be present in the "code" subfolder of the working directory, and all data must be present in a subfolder called "data". An R environment "all_competition_matrices.Rdata" is available in the "data" subfolder, for easy loading, but each matrix is also individually available if needed.
+
+# 0. Loading packages, working directory {-}
+
+```{r packages} 
+library("rmdformats") # this package needs to be loaded to knit
+library("tidyr") # data wrangling
+library("dplyr") # data wrangling
+library("stringr") # data wrangling
+library("ggplot2") # plotting package
+library("ggthemes") # plotting package
+library("ggpubr") # plotting package, ggarrange and getting intercepts from models
+library("reshape") # data wrangling, for melt.array function
+library("reshape2") # data wrangling
+library("igraph") # package for plotting networks in a igraph object
+library("doParallel") # for parallel computing
+library("parallel") # for parallel computing
+library("moments") # skewness package
+library("bipartite") # useful for network handling
+library("GiniWegNeg") # best definition of Gini with negative values
+library("lme4") # linear model package
+library("jtools") # good presentation of data
+library("ciTools") # used for prediction of lmer with random effects
+library("sjPlot") # package for tab_model function
+library("modelsummary") # another package for summarising model outputs because sjPlot decided one day to stop working
+
+```
+
+```{r working directoy}
+path<-"~/PhD/GitHub Repos/PaNDiv_competition_networks"
+setwd(path)
+```
+
+# 1. Example figures of network metrics {-}
+
+First, we computed examples of matrix and igraph corresponding to a high value of each network metric (see Fig. 1). 
+
+## a. Diagonal dominance (D) {-}
+
+Strong diagonal dominance was simulated with high values of intraspecific competition (in the range of our observed competition coefficients), then we built a matrix and an igraph in order to illustrate the example.
+
+```{r diagonal dominance matrix example}
+
+rich<-6 # species richness level used for example
+diagexample<-matrix(-runif(324),
+                    nrow = 18) # sampling random numbers for interaction coefficients
+diag(diagexample)<-sample(-12:-3, 18, replace = TRUE) # sampling random numbers for 
+# strong intraspecific competition 
+diagexample<-diagexample[1:rich,1:rich] # building the matrix
+rownames(diagexample)<-c("A","B","C","D","E","F") # naming the example species
+colnames(diagexample)<-c("A","B","C","D","E","F")
+
+plot_diagonal<-melt.array(diagexample) # formatting in the long format for ggplot
+plot_diagonal$value<-c(diagexample)
+
+diagplot<-ggplot(plot_diagonal, 
+               aes(x = X1, y = X2)) + 
+  geom_raster(aes(fill=value)) + 
+  scale_fill_gradient2(low="darkblue",
+                       mid = "white", 
+                       high="red", 
+                       limits=c(-12,4)) +
+  labs(x="species", 
+       y="species", 
+       title="Diagonal dominance example") +
+  theme_bw() + 
+  theme(axis.text.x=element_blank(),
+        axis.text.y=element_blank())+
+  scale_y_discrete(limits = rev)+
+  scale_x_discrete(position = "top") # plotting the diagonal dominance matrix example
+# with an explicit color code : purple = negative, orange = positive interactions
+
+```
+
+```{r, figure diagonal dominance matrix, fig.width = 6, fig.align ='center', echo = FALSE}
+diagplot
+```
+
+
+```{r diagonal dominance igraph example}
+#example igraph
+species<-colnames(diagexample) # species in a variable
+weight<-c(t(diagexample)) # define the weight of the paths
+species2<-rep(species,lenght.out = length(weight))
+species1<-rep(species,each=rich)
+network<-data.frame(species1,species2) # explicitly building all paths names
+g<-graph_from_data_frame(network)
+E(g)$weight<-weight
+E(g)$color<-"mediumorchid4"
+E(g)[weight>=0]$color<-"sienna1"
+
+```
+
+
+```{r, figure diagonal dominance igraph, fig.width = 8, fig.height=6}
+plot.igraph(g,
+            edge.width=abs(weight),
+            edge.arrow.size=0.1,
+            edge.arrow.width=1.5,
+            edge.curved=0.2,
+            edge.color=E(g)$color,
+            vertex.size=35,
+            vertex.label.cex=1,
+            vertex.label.color="black",
+            vertex.color="white",
+            layout=layout.circle, 
+            mark.border = "white")
+
+```
+
+## b. Asymmetry (A) {-}
+
+We then computed examples following the same method for all other metrics.
+
+``` {r, asymmetry example matrice}
+
+asymexample<-matrix(runif(324,-12,-5),nrow = 18)
+diag(asymexample)<--0.00001
+asymexample[lower.tri(asymexample, diag = F)]<-runif(153,-1,0)
+asymexample<-asymexample[1:rich,1:rich]
+rownames(asymexample)<-c("A","B","C","D","E","F")
+colnames(asymexample)<-c("A","B","C","D","E","F")
+
+plot_asymmetry<-melt.array(asymexample)
+plot_asymmetry$value<-c(asymexample)
+
+asymplot<-ggplot(plot_asymmetry, 
+               aes(x = X1, y = X2)) + 
+  geom_raster(aes(fill=value)) + 
+  scale_fill_gradient2(low="darkblue",
+                       mid = "white", 
+                       high="red", 
+                       limits=c(-12,4)) +
+  labs(x="species", 
+       y="species", 
+       title="Asymmetry example") +
+  theme_bw() + 
+  theme(axis.text.x=element_blank(),
+        axis.text.y=element_blank())+
+  scale_y_discrete(limits = rev)+
+  scale_x_discrete(position = "top") 
+
+#example igraph
+species<-colnames(asymexample)
+weight<-c(t(asymexample))
+sp2<-rep(species,lenght.out = length(weight))
+sp1<-rep(species,each=rich)
+network<-data.frame(sp1,sp2)
+g<-graph_from_data_frame(network)
+E(g)$weight<-weight
+E(g)$color<-"mediumorchid4"
+E(g)[weight>=0]$color<-"sienna1"
+  
+```
+
+```{r, figure asymmetry matrix, fig.width = 6, fig.align ='center', echo = FALSE}
+asymplot
+```
+
+```{r, figure asymmetry igraph, fig.width = 8, fig.height=6}
+plot.igraph(g,
+            edge.width=abs(weight),
+            edge.arrow.size=0.1,
+            edge.arrow.width=1.5,
+            edge.curved=0.2,
+            edge.color=E(g)$color, 
+            vertex.size=35,
+            vertex.label.cex=1,
+            vertex.label.color="black",
+            vertex.color="white",
+            layout=layout.circle, 
+            mark.border = "white")
+
+```
+
+
+## c. Skewness (</span>&gamma;</span>) {-}
+
+
+``` {r, skewness example matrice}
+
+skewexample<-matrix(runif(324, -12,4),nrow = 18)
+skewexample<-skewexample[1:6,1:6]
+rownames(skewexample)<-c("A","B","C","D","E","F")
+colnames(skewexample)<-c("A","B","C","D","E","F")
+
+
+plot_skewness<-melt.array(skewexample)
+plot_skewness$value<-c(skewexample)
+
+skewplot<-ggplot(plot_skewness, 
+               aes(x = X1, y = X2)) + 
+  geom_raster(aes(fill=value)) + 
+  scale_fill_gradient2(low="darkblue",
+                       mid = "white", 
+                       high="red", 
+                       limits=c(-12,4)) +
+  labs(x="species", 
+       y="species", 
+       title="Skewness example") +
+  theme_bw() + theme(axis.text.x=element_blank(),
+                     axis.text.y=element_blank())+
+  scale_y_discrete(limits = rev)+
+  scale_x_discrete(position = "top") 
+
+#example igraph
+species<-colnames(skewexample)
+weight<-c(t(skewexample))
+sp2<-rep(species,
+         lenght.out = length(weight))
+sp1<-rep(species,
+         each=rich)
+network<-data.frame(sp1,sp2)
+g<-graph_from_data_frame(network)
+E(g)$weight<-weight
+E(g)$color<-"mediumorchid4"
+E(g)[weight>=0]$color<-"sienna1"
+  
+
+```
+
+```{r, figure skewness matrix, fig.width = 6, fig.align ='center', echo = FALSE}
+skewplot
+```
+
+``` {r, skewness igraph, fig.width = 8, fig.height=6}
+plot.igraph(g,
+            edge.width=abs(weight),
+            edge.arrow.size=0.1,
+            edge.arrow.width=1.5,
+            edge.curved=0.2,
+            edge.color=E(g)$color,
+            vertex.size=35,
+            vertex.label.cex=1,
+            vertex.label.color="black",
+            vertex.color="white",
+            layout=layout.circle, 
+            mark.border = "white")
+```
+
+
+## d. Evenness (1-G) {-}
+
+```{r, gini example}
+giniexample<-matrix(-runif(324),nrow = 18)
+giniexample<-giniexample[1:6,1:6]
+rownames(giniexample)<-c("A","B","C","D","E","F")
+colnames(giniexample)<-c("A","B","C","D","E","F")
+
+plot_gini<-melt.array(giniexample)
+plot_gini$value<-c(giniexample)
+
+giniplot<-ggplot(plot_gini, aes(x = X1, y = X2)) + 
+  geom_raster(aes(fill=value)) + 
+  scale_fill_gradient2(low="darkblue",
+                       mid = "white", 
+                       high="red", 
+                       limits=c(-12,4)) +
+  labs(x="species", 
+       y="species", 
+       title="Gini (evenness) example") +
+  theme_bw() + theme(axis.text.x=element_blank(),
+                     axis.text.y=element_blank())+
+  scale_y_discrete(limits = rev)+
+  scale_x_discrete(position = "top") 
+
+#example igraph
+species<-colnames(giniexample)
+weight<-c(t(giniexample))
+sp2<-rep(species,lenght.out = length(weight))
+sp1<-rep(species,each=rich)
+network<-data.frame(sp1,sp2)
+g<-graph_from_data_frame(network)
+E(g)$weight<-weight
+E(g)$color<-"mediumorchid4"
+E(g)[weight>=0]$color<-"sienna1"
+```
+
+```{r, figure gini matrix, fig.width = 6, fig.align ='center', echo = FALSE}
+giniplot
+```
+
+``` {r, gini igraph, fig.width = 8, fig.height=6}
+plot.igraph(g,
+            edge.width=abs(weight),
+            edge.arrow.size=0.1,
+            edge.arrow.width=1.5,
+            edge.curved=0.2,
+            edge.color=E(g)$color,
+            vertex.size=35,
+            vertex.label.cex=1,
+            vertex.label.color="black",
+            vertex.color="white",
+            layout=layout.circle, 
+            mark.border = "white")
+```
+
+## e. Modularity (M) {-}
+
+```{r, modularity example}
+moduexample<-matrix(runif(324,-12,-2),nrow = 18)
+moduexample[1,]<-runif(18, -0.5,0)
+moduexample[,1]<-runif(18, -0.5,0)
+moduexample[6,]<-runif(18, -0.5,0)
+moduexample[,6]<-runif(18, -0.5,0)
+diag(moduexample)<--0.0001
+moduexample<-moduexample[1:6,1:6]
+rownames(moduexample)<-c("A","B","C","D","E","F")
+colnames(moduexample)<-c("A","B","C","D","E","F")
+
+plot_modularity<-melt.array(moduexample)
+plot_modularity$value<-c(moduexample)
+
+moduplot<-ggplot(plot_modularity, aes(x = X1, y = X2)) + 
+  geom_raster(aes(fill=value)) + 
+  scale_fill_gradient2(low="darkblue",
+                       mid = "white", 
+                       high="red", 
+                       limits=c(-12,4)) +
+  labs(x="species", 
+       y="species", 
+       title="Modularity example") +
+  theme_bw() + 
+  theme(axis.text.x=element_blank(),
+        axis.text.y=element_blank())+
+  scale_y_discrete(limits = rev)+
+  scale_x_discrete(position = "top")
+
+#example igraph
+species<-colnames(moduexample)
+weight<-c(t(moduexample))
+sp2<-rep(species,lenght.out = length(weight))
+sp1<-rep(species,each=rich)
+network<-data.frame(sp1,sp2)
+g<-graph_from_data_frame(network)
+E(g)$weight<-weight
+# define best clusters using cluster_otpima function
+clu<-cluster_optimal(g,weights = abs(E(g)$weight))
+indclass<-data.frame(values=species,ind=as.character(clu$membership)) # save cluster number for each species
+cols <- c("1"="salmon2", "2"="seashell2") # assign colors for the two clusters
+V(g)$color <- cols[indclass$ind[match(V(g)$name,indclass$values)]] # cluster colors goes in a variable
+E(g)$color<-"mediumorchid4"
+E(g)[weight>=0]$color<-"sienna1"
+```
+
+```{r, figure modularity matrix, fig.width = 6, fig.align ='center', echo = FALSE}
+moduplot
+```
+
+``` {r, modularity igraph, fig.width = 8, fig.height=6}
+plot.igraph(g,
+            edge.width=abs(weight),
+            edge.arrow.size=0.1,
+            edge.arrow.width=1.5,
+            edge.curved=0.2,
+            edge.color=E(g)$color,
+            vertex.size=35,
+            vertex.label.cex=1,
+            vertex.label.color="black",
+            mark.groups=clu,
+            mark.col=cols,
+            layout=layout.circle, 
+            mark.border = "white")
+
+```
+
+# 2. Network metrics for communities of 5 species {-}
+
+## a. Loading competition matrices {-}
+
+Here is the list of the competition matrices and their transformation (all coefficients were divided by the standard errors obtained from the glmmTMB models), used for the rest of the analysis.
+
+```{r, loading comeptition matrices, eval = FALSE}
+# open matrices and set dataframe 
+alpha_june_control<-read.table("data/biommatrix_june_2020_control.txt",header = T, sep = "\t", row.names = 1)
+SE_alpha_june_control<-read.table("data/SE_biommatrix_june_2020_control.txt",header = T, sep = "\t", row.names = 1)
+alpha_june_control<-alpha_june_control/SE_alpha_june_control
+alpha_june_control<-as.data.frame(alpha_june_control)
+
+alpha_june_nitrogen<-read.table("data/biommatrix_june_2020_nitrogen.txt",header = T, sep = "\t", row.names = 1)
+SE_alpha_june_nitrogen<-read.table("data/SE_biommatrix_june_2020_nitrogen.txt",header = T, sep = "\t", row.names = 1)
+alpha_june_nitrogen<-alpha_june_nitrogen/SE_alpha_june_nitrogen
+alpha_june_nitrogen<-as.data.frame(alpha_june_nitrogen)
+
+alpha_june_fungicide<-read.table("data/biommatrix_june_2020_fungicide.txt",header = T, sep = "\t", row.names = 1)
+SE_alpha_june_fungicide<-read.table("data/SE_biommatrix_june_2020_fungicide.txt",header = T, sep = "\t", row.names = 1)
+alpha_june_fungicide<-alpha_june_fungicide/SE_alpha_june_fungicide
+alpha_june_fungicide<-as.data.frame(alpha_june_fungicide)
+
+alpha_june_combined<-read.table("data/biommatrix_june_2020_combined.txt",header = T, sep = "\t", row.names = 1)
+SE_alpha_june_combined<-read.table("data/SE_biommatrix_june_2020_combined.txt",header = T, sep = "\t", row.names = 1)
+alpha_june_combined<-alpha_june_combined/SE_alpha_june_combined
+alpha_june_combined<-as.data.frame(alpha_june_combined)
+
+alpha_june_control<-as.matrix(alpha_june_control)
+alpha_june_nitrogen<-as.matrix(alpha_june_nitrogen)
+alpha_june_fungicide<-as.matrix(alpha_june_fungicide)
+alpha_june_combined<-as.matrix(alpha_june_combined)
+
+alpha_august_control<-read.table("data/biommatrix_august_2020_control.txt",header = T, sep = "\t", row.names = 1)
+SE_alpha_august_control<-read.table("data/SE_biommatrix_august_2020_control.txt",header = T, sep = "\t", row.names = 1)
+alpha_august_control<-alpha_august_control/SE_alpha_august_control
+alpha_august_control<-as.data.frame(alpha_august_control)
+
+alpha_august_nitrogen<-read.table("data/biommatrix_august_2020_nitrogen.txt",header = T, sep = "\t", row.names = 1)
+SE_alpha_august_nitrogen<-read.table("data/SE_biommatrix_august_2020_nitrogen.txt",header = T, sep = "\t", row.names = 1)
+alpha_august_nitrogen<-alpha_august_nitrogen/SE_alpha_august_nitrogen
+alpha_august_nitrogen<-as.data.frame(alpha_august_nitrogen)
+
+alpha_august_fungicide<-read.table("data/biommatrix_august_2020_fungicide.txt",header = T, sep = "\t", row.names = 1)
+SE_alpha_august_fungicide<-read.table("data/SE_biommatrix_august_2020_fungicide.txt",header = T, sep = "\t", row.names = 1)
+alpha_august_fungicide<-alpha_august_fungicide/SE_alpha_august_fungicide
+alpha_august_fungicide<-as.data.frame(alpha_august_fungicide)
+
+alpha_august_combined<-read.table("data/biommatrix_august_2020_combined.txt",header = T, sep = "\t", row.names = 1)
+SE_alpha_august_combined<-read.table("data/SE_biommatrix_august_2020_combined.txt",header = T, sep = "\t", row.names = 1)
+alpha_august_combined<-alpha_august_combined/SE_alpha_august_combined
+alpha_august_combined<-as.data.frame(alpha_august_combined)
+
+alpha_august_control<-as.matrix(alpha_august_control)
+alpha_august_nitrogen<-as.matrix(alpha_august_nitrogen)
+alpha_august_fungicide<-as.matrix(alpha_august_fungicide)
+alpha_august_combined<-as.matrix(alpha_august_combined)
+
+save.image(file = "data/all_competition_matrices.Rdata")
+
+```
+
+For an easy load, you can just load "all_competition_matrices.Rdata"
+
+``` {r, easy competition matrices load}
+load(file ="data/all_competition_matrices.Rdata")
+```
+
+## b. Loading SLA data {-}
+
+In order to distinguish fast growing species from slow growing species, we used data on the specific leaf area gathered on PaNDiv experiment monocultures in 2019. We log transformed the value in order to remove the correlation between mean SLA and variance SLA.
+
+```{r, SLA load and log transformation}
+
+#SLA for continuous value of fast versus slow growing species
+sla<- read.table("data/SLA_PaNDiv_2016-2019.txt",header = T)
+sla<-cbind(sla,str_split_fixed(sla$sampling.period, "/", 3)) # explicit date of sampling period
+colnames(sla)[12:14]<-c("month","day","year") 
+sla$day<-NULL # remove useless data
+sla2019<-subset(sla,sla$year=="2019") # only using data collected in 2019
+meansla2019nonlog<-sla2019 %>% group_by(Species) %>% summarise_at(vars(mean_SLA), list(value=mean)) #averaging both June and August SLA
+meansla2019<-meansla2019nonlog # saving non log values in a variable, just in case
+meansla2019$value<-log(meansla2019$value) # log transform SLA values
+
+```
+
+## c. All possible networks of 5 species {-}
+
+Here is a list of all PaNDiv species abbreviations. From there, we calculated all possible combo for a given network size (5 species). The network size is flexible, but the closer to 9 species, the longer the code takes to run due to the high number of possible combos.
+
+```{r, assign richness and calculate combos}
+
+sp<-c("Hp","Be","Ao","Dg","Fr","Hl","Lp","Pt","Am","Cj","Cb","To","Dc","Sp","Pg","Ra","Pm","Ga") # list of all species
+slowsp<-c("Hp","Be", "Ao",  "Fr", "Am", "Cj",  "Dc", "Sp", "Pg", "Pm") # list of all slow growing species
+fastsp<-c("Cb","Dg","Ga","Hl","Lp", "Pt", "Ra", "To") # list of all fast growing species
+rich<-5 #assign a number between 1 and 18 for species richness of the sub-matrix
+slowdat<-as.data.frame(combn(slowsp,rich)) # all slow combination of 5
+fastdat<-as.data.frame(combn(fastsp,rich)) # all fast combination of 5
+mixdat<-as.data.frame(combn(sp,rich)) # all combinations of 5 species
+
+```
+
+The following function file can be found in the "code" subfolder, it needs to be loaded for the rest of the analysis.
+
+```{r, important load functions}
+#call the function file 
+source("code/function_competition_network.R")
+```
+
+In order to optimize the time of code running, we removed the unnecessary combinations (only fast or only slow in mixed data), and we set parallel computing (packages "doparallel" and "parallel").
+
+``` {r, optimizing in the long run}
+
+#remove all fast and all slow network from mixed communities
+mixdat<-removeidentical(mixdat,slowdat) # personal function from "function_competition_network.R"
+mixdat<-removeidentical(mixdat,fastdat)
+
+#set parallel computation
+numCores <- detectCores() #number of cores in your computer
+registerDoParallel(numCores/2-1) #important: define parallel computation to numCores
+
+```
+
+## d. Calculate network metrics for each community {-}
+
+The following code calculates all network metrics for each combo of 5 species (or any other input of richness value). **This code takes more than 2 hours to run**, if you are only interested in the output, you can load it directly from below.
+
+```{r, very long code, getting all network metrics, eval = FALSE}
+
+# list of competition matrices for all treatments and seasons
+all<-list(alpha_june_control,alpha_june_nitrogen,alpha_june_fungicide,alpha_june_combined,alpha_august_control,alpha_august_nitrogen,alpha_august_fungicide,alpha_august_combined)
+names(all)<-c("June C", "June N", "June F", "June NF", "August C", "August N", "August F", "August NF")
+
+#compute all network metrics for networks of mixed SLA
+mixnet<-networkmetrics(mixdat) # /!\ WARNING : takes 2 hours to run (output directly available below)
+speciesmixed<-mixnet[[2]]
+mixnet<-mixnet[[1]]
+mixnet$Communities<-"Mixed"
+
+#compute all network metrics for networks of low SLA
+slownet<-networkmetrics(slowdat) # networkmetrics() is a personal function defined in "function_competition_network.R"
+speciesslow<-slownet[[2]]
+slownet<-slownet[[1]]
+slownet$Communities<-"Slow"
+
+#compute all network metrics for networks of high SLA
+fastnet<-networkmetrics(fastdat)
+speciesfast<-fastnet[[2]]
+fastnet<-fastnet[[1]]
+fastnet$Communities<-"Fast"
+
+save.image(file = "results/network_metrics_5_species.Rdata")
+
+```
+
+Here is the environment where the output is saved for networks of 5 species:
+
+``` {r, network metrics output, eval = FALSE}
+
+load(file ="results/network_metrics_5_species.Rdata")
+
+```
+
+## e. Scaling variables, formatting treatments, and matrix of species presence/absence {-}
+
+
+## f. Multi-membership modelling applied to the communities {-}
+
+
+# 3. Network metrics for communities of 5, 7, 11 and 15 species {-}
+
