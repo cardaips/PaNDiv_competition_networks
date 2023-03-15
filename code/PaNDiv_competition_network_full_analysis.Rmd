@@ -47,6 +47,9 @@ In order to run this file, the attached R script "functions_competition_network.
 <br>
 <br>
 To avoid long running time, several Rdata images were also saved in the "result" folder, and can be loaded in the corresponding parts of the script.
+<br>
+<br>
+**WARNING** Before knitting, make sure the knit directory is the project directory and not the document directory, it can be changed in the knit options.
 
 # 0. Loading packages, working directory {-}
 
