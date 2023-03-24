@@ -1,5 +1,5 @@
 ---
-title: "PaNdiv experiment, competition network analysis"
+title: "PaNDiv experiment, competition network analysis"
 author: "Caroline Daniel"
 date: "`r Sys.Date()`"
 output: 
@@ -49,7 +49,7 @@ In order to run this file, the attached R script "functions_competition_network.
 To avoid long running time, several Rdata images were also saved in the "result" folder, and can be loaded in the corresponding parts of the script.
 <br>
 <br>
-**WARNING** Before knitting, make sure the knit directory is the project directory and not the document directory, it can be changed in the knit options.
+**WARNING:** before knitting, make sure the knit directory is the project directory and not the document directory, it can be changed in the knit options.
 
 # 0. Loading packages, working directory {-}
 
@@ -749,19 +749,19 @@ all<-list(alpha_june_control,alpha_june_nitrogen,alpha_june_fungicide,alpha_june
 names(all)<-c("June C", "June N", "June F", "June NF", "August C", "August N", "August F", "August NF")
 
 #compute all network metrics for networks of mixed SLA
-mixnet<-networkmetrics(mixdat) # /!\ WARNING : takes 30 minutes to run (output directly available below)
+mixnet<-networkmetrics(mixdat,rich) # /!\ WARNING : takes 30 minutes to run (output directly available below)
 speciesmixed<-mixnet[[2]]
 mixnet<-mixnet[[1]]
 mixnet$Communities<-"Mixed"
 
 #compute all network metrics for networks of low SLA
-slownet<-networkmetrics(slowdat) # networkmetrics() is a personal function defined in "function_competition_network.R"
+slownet<-networkmetrics(slowdat,rich) # networkmetrics() is a personal function defined in "function_competition_network.R"
 speciesslow<-slownet[[2]]
 slownet<-slownet[[1]]
 slownet$Communities<-"Slow"
 
 #compute all network metrics for networks of high SLA
-fastnet<-networkmetrics(fastdat)
+fastnet<-networkmetrics(fastdat,rich)
 speciesfast<-fastnet[[2]]
 fastnet<-fastnet[[1]]
 fastnet$Communities<-"Fast"
@@ -1282,3 +1282,11 @@ ggarrange(effect, response)
 
 # 3. Network metrics for communities of 5, 7, 11 and 15 species {-}
 
+```{r}
+
+n<-list(5,7,11,15,18) #assign numbers between 1 and 18 for sp richness of sub matrix
+allrich<-NA
+allrich<-lapply(n,networkrich) #takes one day to run
+#saving the models and predictions in an R environment
+save.image(file = "results/richness_data_5-7-11-15-18_species.Rdata")
+```

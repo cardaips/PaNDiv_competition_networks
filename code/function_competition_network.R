@@ -37,7 +37,7 @@ removeidentical<- function(alphai,beta){
 
 
 # get all network metrics, formatted in a good way: all=competition matrix, dat= all combinations of species in the network ####
-networkmetrics<-function(dat){
+networkmetrics<-function(dat,rich){
 species<-data.frame(matrix(nrow=0,ncol = length(sp)))
 colnames(species)<-sp
 mixresults<-data.frame(Modularity=NA,
@@ -73,7 +73,7 @@ allresults<-data.frame(Modularity=NA,
       mixresults[i,1]<-mod # modularity is saved in results
       mixresults[i,2]<-skewness(c(subalpha)) # skewness is saved in results
       v<-c(subalpha) # saves all interaction coefficient to look at their distribution
-      mixresults[i,3]<-Gini_RSV(y=v, w=rep(1, length(v))) # calculates the eveness
+      mixresults[i,3]<-Gini_RSV(y=v, w=rep(1, length(v))) # calculates the evenness
       asymmetry<-abs(subalpha-t(subalpha)) # absolute difference between upper and lower triangle (competition effect / response)
       diag(asymmetry)<-NA # only keep one triangle
       asymmetry<-lower.tri.remove(asymmetry) # only keep one triangle
@@ -102,13 +102,13 @@ allresults<-data.frame(Modularity=NA,
 networkrich<-function(n){
   allrich<-NA
   for (i in 1:length(n)){
-    rich<-n[i]
+    rich<-n[[i]]
     mixdat<-as.data.frame(combn(sp,rich))
     # computing all network metrics for all functional communities
     all<-list(alpha_june_control,alpha_june_nitrogen,alpha_june_fungicide,alpha_june_combined,alpha_august_control,alpha_august_nitrogen,alpha_august_fungicide,alpha_august_combined)
     names(all)<-c("June C", "June N", "June F", "June NF", "August C", "August N", "August F", "August NF")
     
-    mixnet<-networkmetrics(mixdat)
+    mixnet<-networkmetrics(mixdat,rich=rich)
     speciesmixed<-mixnet[[2]]
     mixnet<-mixnet[[1]]
     mixnet$Communities<-"All"
