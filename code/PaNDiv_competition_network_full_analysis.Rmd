@@ -1284,7 +1284,7 @@ ggarrange(effect, response)
 
 ```{r,richness computing, eval=FALSE}
 
-n<-list(5,7,11,15,18) #assign numbers between 1 and 18 for sp richness of sub matrix
+n<-list(5,7,11,15) #assign numbers between 1 and 18 for sp richness of sub matrix
 allrich<-NA
 allrich<-lapply(n,networkrich) #takes one day to run
 #saving the models and predictions in an R environment
@@ -1355,15 +1355,23 @@ opt <- optimizeLmer(devfun)
 m1 <- mkMerMod(environment(devfun), opt, lmod$reTrms, fr = lmod$fr)
 summary(m1)
 
-datapred<-slapred(m1,allrich_data)
+datapred<-slarichpred(m1,allrich_data,n)
+datavpred <-slarichvpred(m1, allrich_data,n)
 
-modupred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
+modurichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
   ylim(c(-2,2))+
-  facet_grid(~Season)+
-  geom_line(linewidth=0.8)+
+  facet_grid(~o.richness)+
+  geom_smooth(method = lm)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylab("Modularity")+
-  #scale_colour_manual(breaks= c("Control","Nitrogen","Fungicide"),values = c("#F8766D","#7CAE00","#00BFC4"))+
   theme_bw()
-modupred
+
+modurichvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
+  ylim(c(-2,2))+
+  facet_grid(~o.richness)+
+  geom_smooth(method = lm)+
+  geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
+  ylab("Modularity")+
+  theme_bw()
+
 ```

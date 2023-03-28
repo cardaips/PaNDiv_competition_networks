@@ -210,6 +210,120 @@ return(vresults)
 }
 
 
+
+# prediction for SLA, model is the model used for prediction, comp is the original data set containing Nitrogen, Fungicide, SLA, Season and different levels of network size
+# returns a fit for the chosen network metrics with confidence intervals
+slarichpred<- function(model, comp, n){
+  
+  # creating an empty dataset called newdata
+  newdata<-list()
+  
+  # initialising the loop with empty result, SLA and SLAv
+  sumboot<-NULL
+  SLA<-NULL
+  SLAv<-NULL
+  
+  # create new data to predict on a new interval
+  # Fake SLA from min to max of our comp original data, 100 datapoints simulated
+  for (i in 1:length(n)){
+    
+  sub<-subset(comp, comp$o.richness==n[[i]])
+  SLA<-seq(min(sub$SLA), max(sub$SLA), length.out=100)
+  
+  # Here is a nice function that compute all possible combination of treatment, note that I set the variance of SLA to 0 (SLAv) in order to decouple SLA from SLAv, I just want to predict SLA.
+  newdata[[i]] <- expand.grid("SLA"=SLA, "Nitrogen" = c(0,1), "Fungicide" = c(0,1), "SLAv" = 0, "Season" = c("June","August"),"o.richness" = n[[i]])
+  
+  }
+  
+  newdata <- melt(newdata, id= c("SLA","Nitrogen","Fungicide","SLAv","Season","o.richness"))
+  newdata$L1<-NULL
+  
+  # little corrections for 
+  newdata$Nitrogen<-as.factor(newdata$Nitrogen)
+  newdata$Fungicide<-as.factor(newdata$Fungicide)
+  newdata$Treatment <- as.factor(paste(newdata$Nitrogen,newdata$Fungicide))
+  #make an ordered factor out of the richness
+  newdata$o.richness<-as.factor(as.numeric(newdata$o.richness))
+  levels(newdata$o.richness)<-c(5,7,11,15)
+  newdata$o.richness<-ordered(newdata$o.richness)
+  
+  # This is my fake random factor, so that my predict function works, but note that I don't compute my prediction and confidence intervals with random factors so they are not used for predictions. It is important that they have the same number of levels than my initial data though (18 for 18 species in my phytometers).
+  newSpecies <- rep(LETTERS[1:18], length.out= nrow(newdata))
+  newdata$Species<-newSpecies
+  
+  # re ordering my treatment levels -> that's only for good plotting
+  levels(newdata$Treatment)<-c("Control","Fungicide","Nitrogen","Combined")
+  newdata$Treatment<-factor(newdata$Treatment, c("Control","Nitrogen","Fungicide","Combined"))
+  
+  
+  # Here is the important part : I create a new function, pfun, that use predict() function but doesn't use random factor to predict (re.form = ~0). I need to run it each time in the loop because otherwise it's mixed with my other function predicting SLA variance (or SLAv) instead of SLA.
+  pfun <- function(.) {
+    predict(., newdata=newdata, re.form=~0, type="response")
+  }
+  
+  # Here is the key function I use, bootMer() from lme4 package, to bootstrap my prediction using my pfun function
+  bootdata<-lme4::bootMer(model, pfun, nsim=100, type="parametric")
+  
+  # Here is the extra function below to summarise bootMer outputs (source : https://deanmarchiori.rbind.io/post/prediction-intervals-for-linear-mixed-effects-models/)
+  sumboot<-sumBoot(bootdata)
+  
+  # saving results in results, makes sense I guess
+  results<-cbind(newdata,sumboot)
+  
+  return(results)
+  
+}
+
+
+
+#prediction for SLA variance, model is the model used for prediction, comp is the original data set containing Nitrogen, Fungicide, SLA variance, Season and different levels of network size
+#returns a fit for the chosen network metrics with confidence intervals
+# the structure and explanations are the same as for the slapred function
+
+slarichvpred<- function(model, comp, n){
+  
+  newdata<-list()
+  sumboot<-NULL
+  SLA<-NULL
+  SLAv<-NULL
+  #create new data to predict on a new interval
+  for (i in 1:length(n)){
+    
+  sub<-subset(comp, comp$o.richness==n[[i]])
+  SLAv<-seq(min(sub$SLAv), max(sub$SLAv), length.out=100)
+  newdata <- expand.grid("SLAv"=SLAv, "Nitrogen" = c(0,1), "Fungicide" = c(0,1), "SLA" = 0, "Season" = c("June","August"), "o.richness" = n[[i]])
+  
+  }
+  newdata <- melt(newdata, id= c("SLA","Nitrogen","Fungicide","SLAv","Season","o.richness"))
+  newdata$L1<-NULL
+  
+  newdata$Nitrogen<-as.factor(newdata$Nitrogen)
+  newdata$Fungicide<-as.factor(newdata$Fungicide)
+  newdata$Treatment <- as.factor(paste(newdata$Nitrogen,newdata$Fungicide))
+  #make an ordered factor out of the richness
+  newdata$o.richness<-as.factor(as.numeric(newdata$o.richness))
+  levels(newdata$o.richness)<-c(5,7,11,15)
+  newdata$o.richness<-ordered(newdata$o.richness)
+  newSpecies <- rep(LETTERS[1:18], length.out= nrow(newdata))
+  newdata$Species<-newSpecies
+  levels(newdata$Treatment)<-c("Control","Fungicide","Nitrogen","Combined")
+  newdata$Treatment<-factor(newdata$Treatment, c("Control","Nitrogen","Fungicide","Combined"))
+  
+  pfun <- function(.) {
+    predict(., newdata=newdata, re.form=~0, type="response")
+  }
+  bootdata<-lme4::bootMer(model, pfun, nsim=100, type="parametric")
+  sumboot<-sumBoot(bootdata)
+  
+  vresults<-cbind(newdata,sumboot)
+  
+  return(vresults)
+}
+
+
+
+
+
 #function useful for predicitons ####
 
 # summarise output of bootstrapping
