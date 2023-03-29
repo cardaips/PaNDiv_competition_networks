@@ -291,7 +291,7 @@ slarichvpred<- function(model, comp, n){
     
   sub<-subset(comp, comp$o.richness==n[[i]])
   SLAv<-seq(min(sub$SLAv), max(sub$SLAv), length.out=100)
-  newdata <- expand.grid("SLAv"=SLAv, "Nitrogen" = c(0,1), "Fungicide" = c(0,1), "SLA" = 0, "Season" = c("June","August"), "o.richness" = n[[i]])
+  newdata[[i]] <- expand.grid("SLAv"=SLAv, "Nitrogen" = c(0,1), "Fungicide" = c(0,1), "SLA" = 0, "Season" = c("June","August"), "o.richness" = n[[i]])
   
   }
   newdata <- melt(newdata, id= c("SLA","Nitrogen","Fungicide","SLAv","Season","o.richness"))
