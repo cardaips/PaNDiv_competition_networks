@@ -1282,6 +1282,8 @@ ggarrange(effect, response)
 
 # 3. Network metrics for communities of 5, 7, 11 and 15 species {-}
 
+In order to check whether the size of the network will impact the effect of treatment, season or SLA and SLA variance on our network metrics, we looked at the effect of several network size (5, 7, 11, or 15 species). This code is heavy to run **and will take at least 4 hours** to be fully computed. Once again, you can simply load the output in the R environment "results/richness_data_5-7-11-15-18_species.Rdata". 
+
 ```{r,richness computing, eval=FALSE}
 
 n<-list(5,7,11,15) #assign numbers between 1 and 18 for sp richness of sub matrix
@@ -1298,8 +1300,11 @@ load(file ="results/richness_data_5-7-11-15-18_species.Rdata")
 
 ```
 
+Now we have computed all possible combination of species for these 4 levels of species richness, we will once again run multimembership model, with network size being computed as an ordered factor.
 
-```{r, format the dataframe and run richness multi membership models}
+This code is also long to run, **several hours at least**, the output can be found directely below.
+
+```{r, format the dataframe and run richness multi membership models, eval=FALSE}
 #format the table
 allrich_data<-melt(allrich, id=colnames(allrich[[1]]))
 allrich_data$L1<-NULL
@@ -1339,28 +1344,132 @@ allrich_data<-subset(allrich_data, allrich_data$Richness != 18)
 speciesmat<-allrich_data[,12:29]
 
 #make an ordered factor out of the richness
-allrich_data$o.richness<-as.factor(as.numeric(allrich_data$Richness))
-levels(allrich_data$o.richness)<-c(5,7,11,15)
-allrich_data$o.richness<-ordered(allrich_data$o.richness)
+allrich_data$network.size<-as.factor(as.numeric(allrich_data$Richness))
+levels(allrich_data$network.size)<-c(5,7,11,15)
+allrich_data$network.size<-ordered(allrich_data$network.size)
 
 #multi membership initialisation
 Species <- rep(LETTERS[1:18], length.out= nrow(allrich_data))
 allrich_data$Species<-Species
 
+
+#Diagonal dominance
+lmod <- lFormula(Diagstrength~Nitrogen*Fungicide*network.size+Nitrogen*Fungicide*(SLA+SLAv)+(1|Species), data=allrich_data)
+lmod$reTrms$Zt <- lmod$reTrms$Ztlist[[1]] <- Matrix(t(speciesmat))
+devfun <- do.call(mkLmerDevfun, lmod)
+opt <- optimizeLmer(devfun)
+m2 <- mkMerMod(environment(devfun), opt, lmod$reTrms, fr = lmod$fr)
+
+datapred<-slarichpred(m2,allrich_data,n)
+datavpred <-slarichvpred(m2, allrich_data,n)
+
+diagrichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
+  ylim(c(-2,2))+
+  facet_grid(~network.size)+
+  geom_smooth(method = lm)+
+  geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
+  ylab("Diagstrength")+
+  theme_bw()
+
+diagrichvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
+  ylim(c(-2,2))+
+  facet_grid(~network.size)+
+  geom_smooth(method = lm)+
+  geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
+  ylab("Diagstrength")+
+  theme_bw()
+
+#Asymmetry
+lmod <- lFormula(Asymmetry~Nitrogen*Fungicide*network.size+Nitrogen*Fungicide*(SLA+SLAv)+(1|Species), data=allrich_data)
+lmod$reTrms$Zt <- lmod$reTrms$Ztlist[[1]] <- Matrix(t(speciesmat))
+devfun <- do.call(mkLmerDevfun, lmod)
+opt <- optimizeLmer(devfun)
+m3 <- mkMerMod(environment(devfun), opt, lmod$reTrms, fr = lmod$fr)
+
+datapred<-slarichpred(m3,allrich_data,n)
+datavpred <-slarichvpred(m3, allrich_data,n)
+
+asymrichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
+  ylim(c(-2,2))+
+  facet_grid(~network.size)+
+  geom_smooth(method = lm)+
+  geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
+  ylab("Asymmetry")+
+  theme_bw()
+
+asymrichvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
+  ylim(c(-2,2))+
+  facet_grid(~network.size)+
+  geom_smooth(method = lm)+
+  geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
+  ylab("Asymmetry")+
+  theme_bw()
+
+#Skewness
+lmod <- lFormula(Skewness~Nitrogen*Fungicide*network.size+Nitrogen*Fungicide*(SLA+SLAv)+(1|Species), data=allrich_data)
+lmod$reTrms$Zt <- lmod$reTrms$Ztlist[[1]] <- Matrix(t(speciesmat))
+devfun <- do.call(mkLmerDevfun, lmod)
+opt <- optimizeLmer(devfun)
+m4 <- mkMerMod(environment(devfun), opt, lmod$reTrms, fr = lmod$fr)
+
+datapred<-slarichpred(m4,allrich_data,n)
+datavpred <-slarichvpred(m4, allrich_data,n)
+
+skewrichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
+  ylim(c(-2,2))+
+  facet_grid(~network.size)+
+  geom_smooth(method = lm)+
+  geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
+  ylab("Skewness")+
+  theme_bw()
+
+skewrichvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
+  ylim(c(-2,2))+
+  facet_grid(~network.size)+
+  geom_smooth(method = lm)+
+  geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
+  ylab("Skewness")+
+  theme_bw()
+
+#Evenness
+lmod <- lFormula(1-Gini~Nitrogen*Fungicide*network.size+Nitrogen*Fungicide*(SLA+SLAv)+(1|Species), data=allrich_data)
+lmod$reTrms$Zt <- lmod$reTrms$Ztlist[[1]] <- Matrix(t(speciesmat))
+devfun <- do.call(mkLmerDevfun, lmod)
+opt <- optimizeLmer(devfun)
+m5 <- mkMerMod(environment(devfun), opt, lmod$reTrms, fr = lmod$fr)
+
+datapred<-slarichpred(m5,allrich_data,n)
+datavpred <-slarichvpred(m5, allrich_data,n)
+
+asymrichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
+  ylim(c(-2,2))+
+  facet_grid(~network.size)+
+  geom_smooth(method = lm)+
+  geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
+  ylab("Gini")+
+  theme_bw()
+
+asymrichvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
+  ylim(c(-2,2))+
+  facet_grid(~network.size)+
+  geom_smooth(method = lm)+
+  geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
+  ylab("Gini")+
+  theme_bw()
+
 #Modularity
-lmod <- lFormula(Modularity~Nitrogen*Fungicide*o.richness+Nitrogen*Fungicide*(SLA+SLAv)+(1|Species), data=allrich_data)
+lmod <- lFormula(Modularity~Nitrogen*Fungicide*network.size+Nitrogen*Fungicide*(SLA+SLAv)+(1|Species), data=allrich_data)
 lmod$reTrms$Zt <- lmod$reTrms$Ztlist[[1]] <- Matrix(t(speciesmat))
 devfun <- do.call(mkLmerDevfun, lmod)
 opt <- optimizeLmer(devfun)
 m1 <- mkMerMod(environment(devfun), opt, lmod$reTrms, fr = lmod$fr)
-summary(m1)
 
 datapred<-slarichpred(m1,allrich_data,n)
 datavpred <-slarichvpred(m1, allrich_data,n)
 
 modurichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
   ylim(c(-2,2))+
-  facet_grid(~o.richness)+
+  facet_grid(~network.size)+
   geom_smooth(method = lm)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylab("Modularity")+
@@ -1368,10 +1477,37 @@ modurichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
 
 modurichvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
   ylim(c(-2,2))+
-  facet_grid(~o.richness)+
+  facet_grid(~network.size)+
   geom_smooth(method = lm)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylab("Modularity")+
   theme_bw()
+
+
+save.image(file = "results/multimembership_results_richness_5-7-11-15-18_species.Rdata")
+
+```
+
+```{r, load the multimembership model richness results directly }
+
+load(file ="results/multimembership_results_richness_5-7-11-15-18_species.Rdata")
+
+```
+
+```{r, plot of supp fig. 4 and 5, fig.width = 14, fig.height = 8, fig.align ='center' }
+
+ggarrange(diagrichpred, 
+          asymrichpred, 
+          skewrichpred,
+          ginirichpred, 
+          modurichpred,
+          common.legend = T, label.x = " ", ncol=1,nrow=5)
+
+ggarrange(diagrichvpred, 
+          asymrichvpred, 
+          skewrichvpred,
+          ginirichvpred, 
+          modurichvpred,
+          common.legend = T, label.x = " ", ncol=1,nrow=5)
 
 ```
