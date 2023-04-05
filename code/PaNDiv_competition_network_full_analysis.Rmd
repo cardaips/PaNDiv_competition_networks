@@ -1441,7 +1441,7 @@ m5 <- mkMerMod(environment(devfun), opt, lmod$reTrms, fr = lmod$fr)
 datapred<-slarichpred(m5,allrich_data,n)
 datavpred <-slarichvpred(m5, allrich_data,n)
 
-asymrichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
+ginirichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
   ylim(c(-2,2))+
   facet_grid(~network.size)+
   geom_smooth(method = lm)+
@@ -1449,7 +1449,7 @@ asymrichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
   ylab("Gini")+
   theme_bw()
 
-asymrichvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
+ginirichvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
   ylim(c(-2,2))+
   facet_grid(~network.size)+
   geom_smooth(method = lm)+
