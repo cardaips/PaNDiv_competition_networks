@@ -227,15 +227,15 @@ slarichpred<- function(model, comp, n){
   # Fake SLA from min to max of our comp original data, 100 datapoints simulated
   for (i in 1:length(n)){
     
-  sub<-subset(comp, comp$o.richness==n[[i]])
+  sub<-subset(comp, comp$network.size==n[[i]])
   SLA<-seq(min(sub$SLA), max(sub$SLA), length.out=100)
   
   # Here is a nice function that compute all possible combination of treatment, note that I set the variance of SLA to 0 (SLAv) in order to decouple SLA from SLAv, I just want to predict SLA.
-  newdata[[i]] <- expand.grid("SLA"=SLA, "Nitrogen" = c(0,1), "Fungicide" = c(0,1), "SLAv" = 0, "Season" = c("June","August"),"o.richness" = n[[i]])
+  newdata[[i]] <- expand.grid("SLA"=SLA, "Nitrogen" = c(0,1), "Fungicide" = c(0,1), "SLAv" = 0, "Season" = c("June","August"),"network.size" = n[[i]])
   
   }
   
-  newdata <- melt(newdata, id= c("SLA","Nitrogen","Fungicide","SLAv","Season","o.richness"))
+  newdata <- melt(newdata, id= c("SLA","Nitrogen","Fungicide","SLAv","Season","network.size"))
   newdata$L1<-NULL
   
   # little corrections for 
@@ -243,9 +243,9 @@ slarichpred<- function(model, comp, n){
   newdata$Fungicide<-as.factor(newdata$Fungicide)
   newdata$Treatment <- as.factor(paste(newdata$Nitrogen,newdata$Fungicide))
   #make an ordered factor out of the richness
-  newdata$o.richness<-as.factor(as.numeric(newdata$o.richness))
-  levels(newdata$o.richness)<-c(5,7,11,15)
-  newdata$o.richness<-ordered(newdata$o.richness)
+  newdata$network.size<-as.factor(as.numeric(newdata$network.size))
+  levels(newdata$network.size)<-c(5,7,11,15)
+  newdata$network.size<-ordered(newdata$network.size)
   
   # This is my fake random factor, so that my predict function works, but note that I don't compute my prediction and confidence intervals with random factors so they are not used for predictions. It is important that they have the same number of levels than my initial data though (18 for 18 species in my phytometers).
   newSpecies <- rep(LETTERS[1:18], length.out= nrow(newdata))
@@ -289,21 +289,21 @@ slarichvpred<- function(model, comp, n){
   #create new data to predict on a new interval
   for (i in 1:length(n)){
     
-  sub<-subset(comp, comp$o.richness==n[[i]])
+  sub<-subset(comp, comp$network.size==n[[i]])
   SLAv<-seq(min(sub$SLAv), max(sub$SLAv), length.out=100)
-  newdata[[i]] <- expand.grid("SLAv"=SLAv, "Nitrogen" = c(0,1), "Fungicide" = c(0,1), "SLA" = 0, "Season" = c("June","August"), "o.richness" = n[[i]])
+  newdata[[i]] <- expand.grid("SLAv"=SLAv, "Nitrogen" = c(0,1), "Fungicide" = c(0,1), "SLA" = 0, "Season" = c("June","August"), "network.size" = n[[i]])
   
   }
-  newdata <- melt(newdata, id= c("SLA","Nitrogen","Fungicide","SLAv","Season","o.richness"))
+  newdata <- melt(newdata, id= c("SLA","Nitrogen","Fungicide","SLAv","Season","network.size"))
   newdata$L1<-NULL
   
   newdata$Nitrogen<-as.factor(newdata$Nitrogen)
   newdata$Fungicide<-as.factor(newdata$Fungicide)
   newdata$Treatment <- as.factor(paste(newdata$Nitrogen,newdata$Fungicide))
   #make an ordered factor out of the richness
-  newdata$o.richness<-as.factor(as.numeric(newdata$o.richness))
-  levels(newdata$o.richness)<-c(5,7,11,15)
-  newdata$o.richness<-ordered(newdata$o.richness)
+  newdata$network.size<-as.factor(as.numeric(newdata$network.size))
+  levels(newdata$network.size)<-c(5,7,11,15)
+  newdata$network.size<-ordered(newdata$network.size)
   newSpecies <- rep(LETTERS[1:18], length.out= nrow(newdata))
   newdata$Species<-newSpecies
   levels(newdata$Treatment)<-c("Control","Fungicide","Nitrogen","Combined")
