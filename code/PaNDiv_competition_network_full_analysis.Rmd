@@ -1302,7 +1302,7 @@ load(file ="results/richness_data_5-7-11-15-18_species.Rdata")
 
 Now we have computed all possible combination of species for these 4 levels of species richness, we will once again run multimembership model, with network size being computed as an ordered factor.
 
-This code is also long to run, **several hours at least**, the output can be found directely below.
+This code is also long to run, **around 5 hours**, the output can be found directly below in the "multimembership_results_richness_5-7-11-15_species.Rdata".
 
 ```{r, format the dataframe and run richness multi membership models, eval=FALSE}
 #format the table
