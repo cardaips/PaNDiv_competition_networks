@@ -1360,10 +1360,10 @@ devfun <- do.call(mkLmerDevfun, lmod)
 opt <- optimizeLmer(devfun)
 m2 <- mkMerMod(environment(devfun), opt, lmod$reTrms, fr = lmod$fr)
 
-datapred<-slarichpred(m2,allrich_data,n)
-datavpred <-slarichvpred(m2, allrich_data,n)
+datadiagpred<-slarichpred(m2,allrich_data,n)
+datadiagvpred <-slarichvpred(m2, allrich_data,n)
 
-diagrichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
+diagrichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datadiagpred)+
   ylim(c(-2,2))+
   facet_grid(~network.size)+
   geom_smooth(method = lm)+
@@ -1371,7 +1371,7 @@ diagrichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
   ylab("Diagstrength")+
   theme_bw()
 
-diagrichvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
+diagrichvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datadiagvpred)+
   ylim(c(-2,2))+
   facet_grid(~network.size)+
   geom_smooth(method = lm)+
@@ -1386,10 +1386,10 @@ devfun <- do.call(mkLmerDevfun, lmod)
 opt <- optimizeLmer(devfun)
 m3 <- mkMerMod(environment(devfun), opt, lmod$reTrms, fr = lmod$fr)
 
-datapred<-slarichpred(m3,allrich_data,n)
-datavpred <-slarichvpred(m3, allrich_data,n)
+dataasympred<-slarichpred(m3,allrich_data,n)
+dataasymvpred <-slarichvpred(m3, allrich_data,n)
 
-asymrichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
+asymrichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=dataasympred)+
   ylim(c(-2,2))+
   facet_grid(~network.size)+
   geom_smooth(method = lm)+
@@ -1397,7 +1397,7 @@ asymrichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
   ylab("Asymmetry")+
   theme_bw()
 
-asymrichvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
+asymrichvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=dataasymvpred)+
   ylim(c(-2,2))+
   facet_grid(~network.size)+
   geom_smooth(method = lm)+
@@ -1412,10 +1412,10 @@ devfun <- do.call(mkLmerDevfun, lmod)
 opt <- optimizeLmer(devfun)
 m4 <- mkMerMod(environment(devfun), opt, lmod$reTrms, fr = lmod$fr)
 
-datapred<-slarichpred(m4,allrich_data,n)
-datavpred <-slarichvpred(m4, allrich_data,n)
+dataskewpred<-slarichpred(m4,allrich_data,n)
+dataskewvpred <-slarichvpred(m4, allrich_data,n)
 
-skewrichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
+skewrichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=dataskewpred)+
   ylim(c(-2,2))+
   facet_grid(~network.size)+
   geom_smooth(method = lm)+
@@ -1423,7 +1423,7 @@ skewrichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
   ylab("Skewness")+
   theme_bw()
 
-skewrichvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
+skewrichvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=dataskewvpred)+
   ylim(c(-2,2))+
   facet_grid(~network.size)+
   geom_smooth(method = lm)+
@@ -1438,10 +1438,10 @@ devfun <- do.call(mkLmerDevfun, lmod)
 opt <- optimizeLmer(devfun)
 m5 <- mkMerMod(environment(devfun), opt, lmod$reTrms, fr = lmod$fr)
 
-datapred<-slarichpred(m5,allrich_data,n)
-datavpred <-slarichvpred(m5, allrich_data,n)
+dataginipred<-slarichpred(m5,allrich_data,n)
+dataginivpred <-slarichvpred(m5, allrich_data,n)
 
-ginirichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
+ginirichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=dataginipred)+
   ylim(c(-2,2))+
   facet_grid(~network.size)+
   geom_smooth(method = lm)+
@@ -1449,7 +1449,7 @@ ginirichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
   ylab("Gini")+
   theme_bw()
 
-ginirichvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
+ginirichvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=dataginivpred)+
   ylim(c(-2,2))+
   facet_grid(~network.size)+
   geom_smooth(method = lm)+
@@ -1464,10 +1464,10 @@ devfun <- do.call(mkLmerDevfun, lmod)
 opt <- optimizeLmer(devfun)
 m1 <- mkMerMod(environment(devfun), opt, lmod$reTrms, fr = lmod$fr)
 
-datapred<-slarichpred(m1,allrich_data,n)
-datavpred <-slarichvpred(m1, allrich_data,n)
+datamodupred<-slarichpred(m1,allrich_data,n)
+datamoduvpred <-slarichvpred(m1, allrich_data,n)
 
-modurichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
+modurichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datamodupred)+
   ylim(c(-2,2))+
   facet_grid(~network.size)+
   geom_smooth(method = lm)+
@@ -1475,7 +1475,7 @@ modurichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
   ylab("Modularity")+
   theme_bw()
 
-modurichvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
+modurichvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datamoduvpred)+
   ylim(c(-2,2))+
   facet_grid(~network.size)+
   geom_smooth(method = lm)+
