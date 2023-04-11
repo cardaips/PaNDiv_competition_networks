@@ -97,8 +97,37 @@ allresults<-data.frame(Modularity=NA,
   return(list(allresults,species))
 }
 
-# get network metrics for different levels of sp richness ####
+# function to plot networks and their modules depending on treatment ####
 
+networkplot <- function(dat, rich){
+  netplot<-list()
+  species<-data.frame(matrix(nrow=0,ncol = length(sp)))
+  colnames(species)<-sp
+  for (j in 1:length(all)) {
+    m<-all[[j]] # select one treatment / season
+    for (i in 1:ncol(dat)) {
+      sps<-dat[,i]
+      species[i,]<-ifelse(colnames(species) %in% sps,1,0)
+      subalpha<-m[sps,sps] # creates a sub matrix only with target species
+      weight<-c(t(subalpha)) # saves the interaction coefficient in a variable
+      sp2<-rep(sps,lenght.out = length(weight)) 
+      sp1<-rep(sps,each=rich) 
+      net<-data.frame(sp1,sp2) # creates every combination of species pair
+      g<-graph_from_data_frame(net) # builds a network with all possible paths
+      E(g)$weight<-weight # assigns interaction coefficient as weights of paths
+      clu<-cluster_optimal(g,weights = abs(E(g)$weight)) # defines which are the best clusters
+      mod<-modularity(g,membership(clu), weights = abs(E(g)$weight))
+      x<-list(g,clu)
+      names(x)<-names(all)[j]
+    }
+    netplot<-append(netplot,x)
+    
+    }
+  return(netplot)
+}
+
+
+# get network metrics for different levels of sp richness ####
 networkrich<-function(n){
   allrich<-NA
   for (i in 1:length(n)){

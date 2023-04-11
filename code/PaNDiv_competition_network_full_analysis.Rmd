@@ -46,7 +46,7 @@ Here will be presented the data analysis attached with "Resource economics trait
 In order to run this file, the attached R script "functions_competition_network.R" must be present in the "code" subfolder of the working directory, and all data must be present in a subfolder called "data". An R environment "all_competition_matrices.Rdata" is available in the "data" subfolder, for easy loading, but each matrix is also individually available if needed.
 <br>
 <br>
-To avoid long running time, several Rdata images were also saved in the "result" folder, and can be loaded in the corresponding parts of the script.
+To avoid long running time, several Rdata environments were also saved in the "result" folder, they can be loaded in the corresponding parts of the script.
 <br>
 <br>
 **WARNING:** before knitting, make sure the knit directory is the project directory and not the document directory, it can be changed in the knit options.
@@ -1109,8 +1109,14 @@ g1
 
 ## g. Individual species effect {-}
 
-``` {r, fungicide competition response versus cover }
+In order to interpret in details the results of our multimembership models, we ran some extra analysis to detect any species effects.
 
+- insight on the fungicide effect
+
+First, we used PaNDiv experiment cover data from 2020, to fit a linear model between the species average competitive response and the change in their cover in June 2020.
+
+``` {r, fungicide competition response versus cover }
+#first, we need to do a little bit of data formatting from long to large cover data format
 dat2020 <- read.table("data/202005_perco.txt", sep = "\t", header = T)
 
 #changing names to same format and deleting useless columns
@@ -1124,17 +1130,19 @@ dat2020$original_species_in_non_VIP<-NULL
 dat2020$Comments<-NULL
 
 
-#simplifying dates (all are august covers)
+#simplifying dates (all are June cover)
 dat2020$datum<-2020
 
 #2020 table
 datot20<-matrix(data=0, nrow=336, ncol=26, byrow = F, dimnames = NULL)
-colnames(datot20)<-c("year","plot","Am","Ao","As","Be","Cb","Cj","Dc","Dg","Fr","Ga","Hl","Hp","Hs","Lp","Pg","Pm","Pt","Ra","Sp","To","bg", "legume","herb","grass")
+colnames(datot20)<-c("year","plot","Am","Ao","As","Be","Cb","Cj","Dc","Dg","Fr","Ga",
+                     "Hl","Hp","Hs","Lp","Pg","Pm","Pt","Ra","Sp","To","bg",
+                     "legume","herb","grass")
 datot20<-as.data.frame(datot20)
 dat2020<-as.data.frame(dat2020)
 dat2020<-dat2020[order(dat2020$plot),]
 
-#loop for filling 2020 table
+#loop for filling 2020 cover table (large format)
 i<-1
 j<-1
 k<-1
@@ -1173,10 +1181,12 @@ rel.cov20<-datot20[,3:26]
 rel.cov20<-rel.cov20/datot20$sum
 rel.cov20$plot<-datot20$plot
 
+#adding treatment info to the plot
 info<-read.table("data/plot_all.txt", sep = "\t", header = T)
 rel.cov20$Nitrogen<-info$N
 rel.cov20$Fungicide<-info$F
 
+#creating dataset for testing the fungicide effect
 test<-rel.cov20[1:24]
 test[test==0]<-NA
 test$Fungicide<-rel.cov20$Fungicide
@@ -1200,7 +1210,7 @@ amatrix<-amatrix[order(names(amatrix))]
 bmatrix<-bmatrix[order(names(bmatrix))]
 x<-data.frame(diff=diff,amatrix=amatrix,bmatrix=bmatrix)
 
-#x[10,]<-NA #remove the 2 extremes ? still significant
+#x[10,]<-NA #remove the 2 extremes? still significant
 #x[1,]<-NA
 
 x<-na.omit(x)
@@ -1277,6 +1287,146 @@ response<-ggplot(data=amatrixall,aes(x=amatrix,y=amatrixn))+
 ```{r, plot supplementary figure 6, fig.align ='center', fig.width=13, fig.height=8, echo = FALSE}
 
 ggarrange(effect, response)
+
+```
+
+## h. Plotting networks and modules {-}
+
+- Slow growing species modules
+```{r, slow growing network modules computing}
+
+#Slow growing species
+netlist<-networkplot(as.data.frame(c(slowsp)), length(slowsp))
+names(netlist)<-rep(names(all),each = 2)
+colslow<-rep("turquoise4", lenght.out=length(slowsp))
+
+#Control network plot
+gcont<-netlist$`June C`
+clucont<-netlist[[2]]
+indclasscont<-data.frame(values=c(slowsp),ind=as.character(clucont$membership))
+colcont<-c("1"="antiquewhite2", "2"="seashell3", "3"="peachpuff3")
+V(gcont)$color <- colcont[indclasscont$ind[match(V(gcont)$name,indclasscont$values)]]
+E(gcont)$color<-"mediumorchid4"
+E(gcont)[weight>=0]$color<-"sienna1"
+
+gcont1 <- igraph::permute(gcont,c(V(gcont)[2], 
+                                  V(gcont)[1],
+                                  V(gcont)[3],  
+                                  V(gcont)[7], 
+                                  V(gcont)[9],  
+                                  V(gcont)[6],
+                                  V(gcont)[4], 
+                                  V(gcont)[8],
+                                  V(gcont)[5], 
+                                  V(gcont)[10]))
+
+modu1<-modularity(gcont,membership(clucont), weights = abs(E(gcont)$weight))
+
+#Fungicide network plot
+gfun<-netlist$`June F`
+clufun<-netlist[[6]]
+indclassfun<-data.frame(values=c(slowsp),ind=as.character(clufun$membership))
+
+colfun<-c("1"="seashell3", "2"="antiquewhite2", "3"="peachpuff3")
+V(gfun)$color <- colfun[indclassfun$ind[match(V(gfun)$name,indclassfun$values)]]
+E(gfun)$color<-"mediumorchid4"
+E(gfun)[weight>=0]$color<-"sienna1"
+
+gfun1 <- igraph::permute(gfun,c(V(gfun)[1], 
+                                  V(gfun)[9],
+                                  V(gfun)[3],  
+                                  V(gfun)[4], 
+                                  V(gfun)[5],  
+                                  V(gfun)[6],
+                                  V(gfun)[7], 
+                                  V(gfun)[8],
+                                  V(gfun)[2], 
+                                  V(gfun)[10]))
+
+modu2<-modularity(gfun,membership(clufun), weights = abs(E(gfun)$weight))
+
+```
+
+```{r, slow growing network plot, fig.width = 8, fig.height=12, echo=FALSE}
+
+par(mfrow=c(2,1))
+
+plot.igraph(gcont1,edge.width=abs(E(gcont)$weight),edge.arrow.size=0.1,edge.arrow.width=1.5,edge.curved=0.2,
+            edge.color=E(gcont1)$color, vertex.size=20,vertex.label.cex=1.5,vertex.label.color=colslow,
+            mark.groups=clucont,mark.col=colcont,layout=layout.circle, mark.border = "white")
+title(main="Slow species, control")
+text(-1,-1, paste("M=", round(modu1, digits=3), sep = ""), cex = 1.5)
+
+
+plot.igraph(gfun1,edge.width=abs(E(gfun)$weight),edge.arrow.size=0.1,edge.arrow.width=1.5,edge.curved=0.2,
+            edge.color=E(gfun1)$color, vertex.size=20,vertex.label.cex=1.5,vertex.label.color=colslow,
+            mark.groups=clufun,mark.col=colfun,layout=layout.circle, mark.border = "white")
+title(main="Slow species, fungicide")
+text(-1,-1, paste("M=", round(modu2, digits=3), sep = ""), cex = 1.5)
+
+```
+
+- Fast growing species modules
+```{r, fast growing network modules computing}
+
+#Slow growing species
+netlist<-networkplot(as.data.frame(c(fastsp)), length(fastsp))
+names(netlist)<-rep(names(all),each = 2)
+colfast<-rep("chartreuse4", lenght.out=length(fastsp))
+
+#Control network plot
+gcont<-netlist$`June C`
+clucont<-netlist[[2]]
+indclasscont<-data.frame(values=c(fastsp),ind=as.character(clucont$membership))
+colcont<-c("1"="honeydew3", "2"="khaki3", "3"="navajowhite3")
+V(gcont)$color <- colcont[indclasscont$ind[match(V(gcont)$name,indclasscont$values)]]
+E(gcont)$color<-"mediumorchid4"
+E(gcont)[weight>=0]$color<-"sienna1"
+
+#no need for permutations here
+
+modu3<-modularity(gcont,membership(clucont), weights = abs(E(gcont)$weight))
+
+
+#Fungicide network plot
+gfun<-netlist$`June F`
+clufun<-netlist[[6]]
+indclassfun<-data.frame(values=c(fastsp),ind=as.character(clufun$membership))
+
+colfun<-c("1"="honeydew3", "2"="navajowhite3", "3"="khaki3")
+V(gfun)$color <- colfun[indclassfun$ind[match(V(gfun)$name,indclassfun$values)]]
+E(gfun)$color<-"mediumorchid4"
+E(gfun)[weight>=0]$color<-"sienna1"
+
+gfun1 <- igraph::permute(gfun,c(V(gfun)[1], 
+                                  V(gfun)[2],
+                                  V(gfun)[3],  
+                                  V(gfun)[6], 
+                                  V(gfun)[5],  
+                                  V(gfun)[4],
+                                  V(gfun)[7], 
+                                  V(gfun)[8]))
+
+modu4<-modularity(gfun,membership(clufun), weights = abs(E(gfun)$weight))
+
+```
+
+```{r, fast growing network plot, fig.width = 8, fig.height=12, echo=FALSE}
+
+par(mfrow=c(2,1))
+
+plot.igraph(gcont,edge.width=abs(E(gcont)$weight),edge.arrow.size=0.1,edge.arrow.width=1.5,edge.curved=0.2,
+            edge.color=E(gcont)$color, vertex.size=20,vertex.label.cex=1.5,vertex.label.color=colfast,
+            mark.groups=clucont,mark.col=colcont,layout=layout.circle, mark.border = "white")
+title(main="Fast species, control")
+text(-1,-1, paste("M=", round(modu3, digits=3), sep = ""), cex = 1.5)
+
+
+plot.igraph(gfun1,edge.width=abs(E(gfun)$weight),edge.arrow.size=0.1,edge.arrow.width=1.5,edge.curved=0.2,
+            edge.color=E(gfun1)$color, vertex.size=20,vertex.label.cex=1.5,vertex.label.color=colfast,
+            mark.groups=clufun,mark.col=colfun,layout=layout.circle, mark.border = "white")
+title(main="Fast species, fungicide")
+text(-1,-1, paste("M=", round(modu4, digits=3), sep = ""), cex = 1.5)
 
 ```
 
@@ -1484,7 +1634,7 @@ load(file ="results/multimembership_results_richness_5-7-11-15-18_species.Rdata"
 
 ```
 
-```{r, plot of supp fig. 4 and 5, fig.width = 14, fig.height = 16, fig.align ='center' }
+```{r, plot of supp fig. 4 and 5, fig.width = 14, fig.height = 16, fig.align ='center'}
 
 ggarrange(diagrichpred, 
           asymrichpred, 
