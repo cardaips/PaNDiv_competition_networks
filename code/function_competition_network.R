@@ -228,7 +228,7 @@ slarichpred<- function(model, comp, n){
   for (i in 1:length(n)){
     
   sub<-subset(comp, comp$network.size==n[[i]])
-  SLA<-seq(min(sub$SLA), max(sub$SLA), length.out=100)
+  SLA<-seq(min(sub$SLA), max(sub$SLA), length.out=50)
   
   # Here is a nice function that compute all possible combination of treatment, note that I set the variance of SLA to 0 (SLAv) in order to decouple SLA from SLAv, I just want to predict SLA.
   newdata[[i]] <- expand.grid("SLA"=SLA, "Nitrogen" = c(0,1), "Fungicide" = c(0,1), "SLAv" = 0, "Season" = c("June","August"),"network.size" = n[[i]])
@@ -290,7 +290,7 @@ slarichvpred<- function(model, comp, n){
   for (i in 1:length(n)){
     
   sub<-subset(comp, comp$network.size==n[[i]])
-  SLAv<-seq(min(sub$SLAv), max(sub$SLAv), length.out=100)
+  SLAv<-seq(min(sub$SLAv), max(sub$SLAv), length.out=50)
   newdata[[i]] <- expand.grid("SLAv"=SLAv, "Nitrogen" = c(0,1), "Fungicide" = c(0,1), "SLA" = 0, "Season" = c("June","August"), "network.size" = n[[i]])
   
   }

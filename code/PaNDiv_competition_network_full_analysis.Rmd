@@ -1364,7 +1364,6 @@ datadiagpred<-slarichpred(m2,allrich_data,n)
 datadiagvpred <-slarichvpred(m2, allrich_data,n)
 
 diagrichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datadiagpred)+
-  ylim(c(-2,2))+
   facet_grid(~network.size)+
   geom_smooth(method = lm)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
@@ -1372,7 +1371,6 @@ diagrichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datadiagpred)+
   theme_bw()
 
 diagrichvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datadiagvpred)+
-  ylim(c(-2,2))+
   facet_grid(~network.size)+
   geom_smooth(method = lm)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
@@ -1390,7 +1388,6 @@ dataasympred<-slarichpred(m3,allrich_data,n)
 dataasymvpred <-slarichvpred(m3, allrich_data,n)
 
 asymrichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=dataasympred)+
-  ylim(c(-2,2))+
   facet_grid(~network.size)+
   geom_smooth(method = lm)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
@@ -1398,7 +1395,6 @@ asymrichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=dataasympred)+
   theme_bw()
 
 asymrichvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=dataasymvpred)+
-  ylim(c(-2,2))+
   facet_grid(~network.size)+
   geom_smooth(method = lm)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
@@ -1416,7 +1412,6 @@ dataskewpred<-slarichpred(m4,allrich_data,n)
 dataskewvpred <-slarichvpred(m4, allrich_data,n)
 
 skewrichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=dataskewpred)+
-  ylim(c(-2,2))+
   facet_grid(~network.size)+
   geom_smooth(method = lm)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
@@ -1424,7 +1419,6 @@ skewrichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=dataskewpred)+
   theme_bw()
 
 skewrichvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=dataskewvpred)+
-  ylim(c(-2,2))+
   facet_grid(~network.size)+
   geom_smooth(method = lm)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
@@ -1442,7 +1436,6 @@ dataginipred<-slarichpred(m5,allrich_data,n)
 dataginivpred <-slarichvpred(m5, allrich_data,n)
 
 ginirichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=dataginipred)+
-  ylim(c(-2,2))+
   facet_grid(~network.size)+
   geom_smooth(method = lm)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
@@ -1450,7 +1443,6 @@ ginirichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=dataginipred)+
   theme_bw()
 
 ginirichvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=dataginivpred)+
-  ylim(c(-2,2))+
   facet_grid(~network.size)+
   geom_smooth(method = lm)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
@@ -1468,7 +1460,6 @@ datamodupred<-slarichpred(m1,allrich_data,n)
 datamoduvpred <-slarichvpred(m1, allrich_data,n)
 
 modurichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datamodupred)+
-  ylim(c(-2,2))+
   facet_grid(~network.size)+
   geom_smooth(method = lm)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
@@ -1476,7 +1467,6 @@ modurichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datamodupred)+
   theme_bw()
 
 modurichvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datamoduvpred)+
-  ylim(c(-2,2))+
   facet_grid(~network.size)+
   geom_smooth(method = lm)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
@@ -1494,7 +1484,7 @@ load(file ="results/multimembership_results_richness_5-7-11-15-18_species.Rdata"
 
 ```
 
-```{r, plot of supp fig. 4 and 5, fig.width = 14, fig.height = 8, fig.align ='center' }
+```{r, plot of supp fig. 4 and 5, fig.width = 14, fig.height = 16, fig.align ='center' }
 
 ggarrange(diagrichpred, 
           asymrichpred, 
