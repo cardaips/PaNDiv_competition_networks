@@ -1113,7 +1113,7 @@ In order to interpret in details the results of our multimembership models, we r
 
 - insight on the fungicide effect
 
-First, we used PaNDiv experiment cover data from 2020, to fit a linear model between the species average competitive response and the change in their cover in June 2020.
+First, we used PaNDiv experiment cover data from 2020, to fit a linear model between the species average competitive response and the change in their cover with fungicide addition in June 2020.
 
 ``` {r, fungicide competition response versus cover }
 #first, we need to do a little bit of data formatting from long to large cover data format
@@ -1221,7 +1221,7 @@ summary(model)
 
 ```{r,plot supplementary figure 5, fig.align ='center', fig.height=10, fig.width=10, echo = FALSE}
 
-plot(x$diff~x$bmatrix, xlab= "Competitive response", ylab = "Change in %cover with Fungicide")
+plot(x$diff~x$bmatrix, xlab= "Average competitive effect", ylab = "Change in %cover with Fungicide")
 text(x$diff~x$bmatrix,labels=row.names(x),pos=4)
 abline(model)
 
@@ -1292,7 +1292,7 @@ ggarrange(effect, response)
 
 ## h. Plotting networks and modules {-}
 
-- Slow growing species modules
+- Slow growing species modules, fungicide effect
 ```{r, slow growing network modules computing}
 
 #Slow growing species
@@ -1366,7 +1366,7 @@ text(-1,-1, paste("M=", round(modu2, digits=3), sep = ""), cex = 1.5)
 
 ```
 
-- Fast growing species modules
+- Fast growing species modules, fungicide effect
 ```{r, fast growing network modules computing}
 
 #Slow growing species
