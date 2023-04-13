@@ -97,7 +97,7 @@ allresults<-data.frame(Modularity=NA,
   return(list(allresults,species))
 }
 
-# function to plot networks and their modules depending on treatment ####
+# function to plot networks and their modules depending on treatment, returns a list of igraph objects and cluster membership for each species in the network ####
 
 networkplot <- function(dat, rich){
   netplot<-list()

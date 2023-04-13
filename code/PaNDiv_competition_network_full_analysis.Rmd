@@ -853,6 +853,8 @@ comp$Species<-Species
 
 Running the models and their prediction **takes about 45 min**, if you are just interested in the output, you can load the image file below.
 
+This code presents the average effect across June and August 2020, but with a few modifications (as indicated in the code below), you can look at the results on the two sampling periods separately and obtain the Supplementary figures 2 and 3. 
+
 - Diagonal dominance (D)
 ``` {r,multimembership model diagonal dominance, eval = FALSE}
 
@@ -870,13 +872,14 @@ opt <- optimizeLmer(devfun)
 m2 <- mkMerMod(environment(devfun), opt, lmod$reTrms, fr = lmod$fr)
 
 datapred<-slapred(m2,comp) # takes two-three minutes to run, personal function defined in "function_competition_network.R"
-#average across seasons for more clarity
+#average across seasons for more clarity, remove to look at the two sampling periods separately
 datapred<-aggregate(cbind(fit,lwr,upr)~SLA+Treatment,FUN=mean,data= datapred)
 datavpred<-slavpred(m2,comp) # takes two-three minutes to run
-#average across seasons for more clarity
+#average across seasons for more clarity, remove to look at the two sampling periods separately
 datavpred<-aggregate(cbind(fit,lwr,upr)~SLAv+Treatment,FUN=mean,data= datavpred)
 
 diagpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
+  #facet_grid(~Season)+ #add to look at the two sampling periods separately
   geom_line(size=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylab("Diagonal dominance")+
@@ -884,6 +887,7 @@ diagpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
   theme_bw()
 
 diagvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
+  #facet_grid(~Season)+ #add to look at the two sampling periods separately
   geom_line(size=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   xlab(" ")+
@@ -902,15 +906,16 @@ opt <- optimizeLmer(devfun)
 m3 <- mkMerMod(environment(devfun), opt, lmod$reTrms, fr = lmod$fr)
 
 datapred<-slapred(m3,comp)
-#average across seasons for more clarity
+#average across seasons for more clarity, remove to look at the two sampling periods separately
 datapred<-aggregate(cbind(fit,lwr,upr)~SLA+Treatment,FUN=mean,data= datapred)
 datavpred<-slavpred(m3,comp) #takes two-three minutes each to run
-#average across seasons for more clarity
+#average across seasons for more clarity, remove to look at the two sampling periods separately
 datavpred<-aggregate(cbind(fit,lwr,upr)~SLAv+Treatment,FUN=mean,data= datavpred)
 
 datapredb<-subset(datapred, datapred$Treatment=="Control"|datapred$Treatment=="Nitrogen"|datapred$Treatment=="Fungicide")
 
 asympred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
+  #facet_grid(~Season)+ #add to look at the two sampling periods separately
   geom_line(size=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylim(c(-0.70,0.7))+
@@ -920,6 +925,7 @@ asympred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
 
 
 asymvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
+  #facet_grid(~Season)+ #add to look at the two sampling periods separately
   geom_line(size=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylim(c(-0.7,0.7))+
@@ -940,13 +946,14 @@ opt <- optimizeLmer(devfun)
 m4 <- mkMerMod(environment(devfun), opt, lmod$reTrms, fr = lmod$fr)
 
 datapred<-slapred(m4,comp)
-#average across seasons for more clarity
+#average across seasons for more clarity, remove to look at the two sampling periods separately
 datapred<-aggregate(cbind(fit,lwr,upr)~SLA+Treatment,FUN=mean,data= datapred)
 datavpred<-slavpred(m4,comp) #takes two-three minutes each to run
-#average across seasons for more clarity
+#average across seasons for more clarity, remove to look at the two sampling periods separately
 datavpred<-aggregate(cbind(fit,lwr,upr)~SLAv+Treatment,FUN=mean,data= datavpred)
 
 skewpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
+  #facet_grid(~Season)+ #add to look at the two sampling periods separately
   geom_line(size=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylim(c(-1.5,1.5))+
@@ -955,6 +962,7 @@ skewpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
   theme_bw()
 
 skewvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
+  #facet_grid(~Season)+ #add to look at the two sampling periods separately
   geom_line(size=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+  
   ylim(c(-1.5,1.5))+
@@ -974,15 +982,16 @@ opt <- optimizeLmer(devfun)
 m5 <- mkMerMod(environment(devfun), opt, lmod$reTrms, fr = lmod$fr)
 
 datapred<-slapred(m5,comp)
-#average across seasons for more clarity
+#average across seasons for more clarity, remove to look at the two sampling periods separately
 datapred<-aggregate(cbind(fit,lwr,upr)~SLA+Treatment,FUN=mean,data= datapred)
 datavpred<-slavpred(m5,comp) #takes two-three minutes each to run
-#average across seasons for more clarity
+#average across seasons for more clarity, remove to look at the two sampling periods separately
 datavpred<-aggregate(cbind(fit,lwr,upr)~SLAv+Treatment,FUN=mean,data= datavpred)
 
 datapredb<-subset(datapred, datapred$Treatment=="Control"|datapred$Treatment=="Nitrogen"|datapred$Treatment=="Fungicide")
 
 ginipred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
+  #facet_grid(~Season)+ #add to look at the two sampling periods separately
   ylim(c(-0.5,2.5))+
   geom_line(size=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
@@ -991,6 +1000,7 @@ ginipred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
   theme_bw()
 
 ginivpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
+  #facet_grid(~Season)+ #add to look at the two sampling periods separately
   ylim(c(-0.5,2.5))+
   geom_line(size=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
@@ -1010,13 +1020,14 @@ opt <- optimizeLmer(devfun)
 m1 <- mkMerMod(environment(devfun), opt, lmod$reTrms, fr = lmod$fr)
 
 datapred<-slapred(m1,comp)
-#average across seasons for more clarity
+#average across seasons for more clarity, remove to look at the two sampling periods separately
 datapred<-aggregate(cbind(fit,lwr,upr)~SLA+Treatment,FUN=mean,data= datapred)
 datavpred<-slavpred(m1,comp) #takes two-three minutes each to run
-#average across seasons for more clarity
+#average across seasons for more clarity, remove to look at the two sampling periods separately
 datavpred<-aggregate(cbind(fit,lwr,upr)~SLAv+Treatment,FUN=mean,data= datavpred)
 
 modupred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
+  #facet_grid(~Season)+ #add to look at the two sampling periods separately
   ylim(c(-2,2))+
   geom_line(linewidth=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
@@ -1024,6 +1035,7 @@ modupred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
   theme_bw()
 
 moduvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
+  #facet_grid(~Season)+ #add to look at the two sampling periods separately
   geom_line(linewidth=0.8)+
   ylim(c(-2,2))+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
@@ -1043,7 +1055,7 @@ load(file ="results/multimembership_results_5_species.Rdata")
 
 ```
 
-With the model predictions we can plot Fig.2,
+With the model predictions we can plot Fig.2, the overall yearly effect of treatment and SLA on our network metrics.
 
 ```{r, plot of fig. 2, fig.width = 8, fig.height = 14, fig.align ='center', echo = FALSE }
 ggarrange(diagpred,diagvpred, 
@@ -1106,209 +1118,38 @@ g1
 
 ```
 
+# 3. Supplementary figures {-}
 
-## g. Individual species effect {-}
+## a. Plotting networks and modules {-}
 
-In order to interpret in details the results of our multimembership models, we ran some extra analysis to detect any species effects.
-
-- insight on the fungicide effect
-
-First, we used PaNDiv experiment cover data from 2020, to fit a linear model between the species average competitive response and the change in their cover with fungicide addition in June 2020.
-
-``` {r, fungicide competition response versus cover }
-#first, we need to do a little bit of data formatting from long to large cover data format
-dat2020 <- read.table("data/202005_perco.txt", sep = "\t", header = T)
-
-#changing names to same format and deleting useless columns
-names(dat2020)[names(dat2020)=="Datum"]<-"datum"
-names(dat2020)[names(dat2020)=="Plot_Nr"]<-"plot"
-names(dat2020)[names(dat2020)=="Weed_species"]<-"species"
-
-dat2020$Person<-NULL
-dat2020$Block<-NULL
-dat2020$original_species_in_non_VIP<-NULL
-dat2020$Comments<-NULL
-
-
-#simplifying dates (all are June cover)
-dat2020$datum<-2020
-
-#2020 table
-datot20<-matrix(data=0, nrow=336, ncol=26, byrow = F, dimnames = NULL)
-colnames(datot20)<-c("year","plot","Am","Ao","As","Be","Cb","Cj","Dc","Dg","Fr","Ga",
-                     "Hl","Hp","Hs","Lp","Pg","Pm","Pt","Ra","Sp","To","bg",
-                     "legume","herb","grass")
-datot20<-as.data.frame(datot20)
-dat2020<-as.data.frame(dat2020)
-dat2020<-dat2020[order(dat2020$plot),]
-
-#loop for filling 2020 cover table (large format)
-i<-1
-j<-1
-k<-1
-datot20$plot[i]<-i
-datot20$year[i]<-2020
-
-datot20<-tryCatch({
-for (i in 1:nrow(datot20)){
-  for (k in 1:nrow(dat2020)) {
-    while (datot20$plot[i]==dat2020$plot[k]) {
-      for (j in 1:ncol(datot20)) {
-        if (colnames(datot20)[j]==dat2020$species[k]){
-          datot20[i,j]<-dat2020$X.weeded[k]
-          j<-j+1
-        }
-        else{
-          j<-j+1
-        }
-      }
-      k<-k+1
-      j<-1
-    }
-  }
-  i<-i+1
-  datot20$plot[i]<-i
-  datot20$year[i]<-2020
-}
-},
-error = function (e) {
-  return(datot20)
-})
-
-datot20$sum<-rowSums(datot20[,3:26])
-
-rel.cov20<-datot20[,3:26]
-rel.cov20<-rel.cov20/datot20$sum
-rel.cov20$plot<-datot20$plot
-
-#adding treatment info to the plot
-info<-read.table("data/plot_all.txt", sep = "\t", header = T)
-rel.cov20$Nitrogen<-info$N
-rel.cov20$Fungicide<-info$F
-
-#creating dataset for testing the fungicide effect
-test<-rel.cov20[1:24]
-test[test==0]<-NA
-test$Fungicide<-rel.cov20$Fungicide
-test$Nitrogen<-rel.cov20$Nitrogen
-
-amatrix<-colSums(alpha_june_control)
-bmatrix<-rowSums(alpha_june_control)
-ctest<-subset(test, test$Fungicide==0)
-cm<-colMeans(ctest, na.rm=T)
-ftest<-subset(test, test$Fungicide==1)
-fm<-colMeans(ftest, na.rm=T)
-
-diff<-fm-cm
-diff$Hs<-NA
-diff$As<-NA
-diff<-diff[!is.na(diff)]
-diff<-unlist(diff,use.names=T)
-diff<-diff[1:18]
-diff<-diff[order(names(diff))]
-amatrix<-amatrix[order(names(amatrix))]
-bmatrix<-bmatrix[order(names(bmatrix))]
-x<-data.frame(diff=diff,amatrix=amatrix,bmatrix=bmatrix)
-
-#x[10,]<-NA #remove the 2 extremes? still significant
-#x[1,]<-NA
-
-x<-na.omit(x)
-model<-lm(data=x,diff~bmatrix)
-summary(model)
-
-```
-
-```{r,plot supplementary figure 5, fig.align ='center', fig.height=10, fig.width=10, echo = FALSE}
-
-plot(x$diff~x$bmatrix, xlab= "Average competitive effect", ylab = "Change in %cover with Fungicide")
-text(x$diff~x$bmatrix,labels=row.names(x),pos=4)
-abline(model)
-
-```
-
-```{r, species effect and response versus treatment}
-
-#difference of competitive effect by species with treatment
-bmatrix<-rowSums(alpha_june_control)
-bmatrixn<-rowSums(alpha_june_nitrogen)
-bmatrixf<-rowSums(alpha_june_fungicide)
-bmatrixnf<-rowSums(alpha_june_combined)
-bmatrixall<-data.frame(bmatrix,bmatrixn,bmatrixf, bmatrixnf)
-matsp<-rownames(bmatrixall)
-bmatrixall<-data.frame(bmatrix,bmatrixn,bmatrixf,bmatrixnf,matsp)
-bmatrixall[6,]<-NA #check if holcus is driving the pattern
-
-effect<-ggplot(data=bmatrixall,aes(x=bmatrix,y=bmatrixn))+
-  geom_smooth(aes(x=bmatrix,y=bmatrixn),method="lm",color="#7CAE00", alpha=0.3, fill="lightgray", linetype="dashed")+
-  geom_smooth(aes(x=bmatrix,y=bmatrixf),method="lm",color="#00BFC4", fill="lightgray", alpha=0.3, linetype="dashed")+
-  geom_smooth(aes(x=bmatrix,y=bmatrixnf),method="lm",color="#C77CFF", fill="lightgray", alpha=0.3, linetype="dashed")+
-  geom_point(color="#7CAE00")+
-  geom_text(aes(label=matsp),color="#7CAE00", hjust=1.5)+
-  geom_point(aes(x=bmatrix,y=bmatrixf), color="#00BFC4")+
-  geom_text(aes(x=bmatrix,y=bmatrixf,label=matsp), color="#00BFC4", hjust=1.5)+
-  geom_point(aes(x=bmatrix,y=bmatrixnf), color="#C77CFF")+
-  geom_text(aes(x=bmatrix,y=bmatrixnf,label=matsp), color="#C77CFF", hjust=1.5)+
-  geom_abline(intercept = 0, slope=1)+
-  xlim(c(-90,10))+ylim(c(-90,10))+
-  labs(title = "Changes in competitive effect with treatment June 2020", 
-       y="Competitive change with treatment : Nitrogen (green), Fungicide (blue), Combined (purple)", x="Competitive effect in control conditions")+
-  scale_fill_manual(values = c("#7CAE00","#00BFC4"), labels=c("Nitrogen","Fungicide"),drop=FALSE)+
-  theme_clean()+
-  theme(plot.background=element_blank())
-
-amatrix<-colSums(alpha_june_control)
-amatrixn<-colSums(alpha_june_nitrogen)
-amatrixf<-colSums(alpha_june_fungicide)
-amatrixnf<-colSums(alpha_june_combined)
-amatrixall<-data.frame(amatrix,amatrixn,amatrixf,amatrixnf)
-matsp<-rownames(amatrixall)
-amatrixall<-data.frame(amatrix,amatrixn,amatrixf, amatrixnf, matsp)
-
-response<-ggplot(data=amatrixall,aes(x=amatrix,y=amatrixn))+
-  geom_smooth(method="lm",color="#7CAE00", fill="lightgray", alpha=0.3, linetype="dashed")+
-  geom_smooth(aes(x=amatrix,y=amatrixf),method="lm",color="#00BFC4", fill="lightgray", alpha=0.3, linetype="dashed")+
-  geom_smooth(aes(x=amatrix,y=amatrixnf),method="lm",color="#C77CFF", fill="lightgray", alpha=0.3, linetype="dashed")+
-  geom_point(color="#7CAE00")+
-  geom_text(aes(label=matsp),color="#7CAE00", hjust=1.5)+
-  geom_point(aes(x=amatrix,y=amatrixf), color="#00BFC4")+
-  geom_text(aes(x=amatrix,y=amatrixf,label=matsp), color="#00BFC4", hjust=1.5)+
-  geom_point(aes(x=amatrix,y=amatrixnf), color="#C77CFF")+
-  geom_text(aes(x=amatrix,y=amatrixnf,label=matsp), color="#C77CFF", hjust=1.5)+
-  geom_abline(intercept = 0, slope=1)+
-  xlim(c(-90,10))+ylim(c(-90,10))+
-  labs(title = "Changes in competitive response with treatment June 2020", 
-       y=" ", x="Competitive response in control conditions")+
-  scale_color_manual(name="Treatments",values = c("#7CAE00","#00BFC4"), breaks=c("Nitrogen","Fungicide"))+
-  theme_clean()+
-  theme(plot.background=element_blank())
-```
-
-```{r, plot supplementary figure 6, fig.align ='center', fig.width=13, fig.height=8, echo = FALSE}
-
-ggarrange(effect, response)
-
-```
-
-## h. Plotting networks and modules {-}
+In order to visualize the impact of fungicide on modularity of slow and fast growing species, we represented networks as igraph objects and showed how the `cluster_optimize()` function creates groups of species that interact strongly together, maximizing the modularity. We also added the M, modularity value for each network.
 
 - Slow growing species modules, fungicide effect
 ```{r, slow growing network modules computing}
 
 #Slow growing species
-netlist<-networkplot(as.data.frame(c(slowsp)), length(slowsp))
+netlist<-networkplot(as.data.frame(c(slowsp)), length(slowsp)) #personal function defined in "function_competition_networks.R"
+#it returns a list of igraph objects and a list of species cluster membership
+#adding treatments as names of the list
 names(netlist)<-rep(names(all),each = 2)
+#slow growing species color code
 colslow<-rep("turquoise4", lenght.out=length(slowsp))
 
 #Control network plot
 gcont<-netlist$`June C`
+#saves species cluster membership
 clucont<-netlist[[2]]
+#formats in a dataframe
 indclasscont<-data.frame(values=c(slowsp),ind=as.character(clucont$membership))
+#defines color of clusters
 colcont<-c("1"="antiquewhite2", "2"="seashell3", "3"="peachpuff3")
+#matches the colors with the membership
 V(gcont)$color <- colcont[indclasscont$ind[match(V(gcont)$name,indclasscont$values)]]
+#color code of interactions
 E(gcont)$color<-"mediumorchid4"
 E(gcont)[weight>=0]$color<-"sienna1"
 
+#reorders species for better graphical representation
 gcont1 <- igraph::permute(gcont,c(V(gcont)[2], 
                                   V(gcont)[1],
                                   V(gcont)[3],  
@@ -1320,18 +1161,24 @@ gcont1 <- igraph::permute(gcont,c(V(gcont)[2],
                                   V(gcont)[5], 
                                   V(gcont)[10]))
 
+#saves modularity
 modu1<-modularity(gcont,membership(clucont), weights = abs(E(gcont)$weight))
 
 #Fungicide network plot
 gfun<-netlist$`June F`
+#saves species cluster membership
 clufun<-netlist[[6]]
+#formats in a dataframe
 indclassfun<-data.frame(values=c(slowsp),ind=as.character(clufun$membership))
-
+#defines color of clusters
 colfun<-c("1"="seashell3", "2"="antiquewhite2", "3"="peachpuff3")
+#matches the colors with the membership
 V(gfun)$color <- colfun[indclassfun$ind[match(V(gfun)$name,indclassfun$values)]]
+#color code of interactions
 E(gfun)$color<-"mediumorchid4"
 E(gfun)[weight>=0]$color<-"sienna1"
 
+#reorders species for better graphical representation
 gfun1 <- igraph::permute(gfun,c(V(gfun)[1], 
                                   V(gfun)[9],
                                   V(gfun)[3],  
@@ -1343,11 +1190,12 @@ gfun1 <- igraph::permute(gfun,c(V(gfun)[1],
                                   V(gfun)[2], 
                                   V(gfun)[10]))
 
+#saves modularity
 modu2<-modularity(gfun,membership(clufun), weights = abs(E(gfun)$weight))
 
 ```
 
-```{r, slow growing network plot, fig.width = 8, fig.height=12, echo=FALSE}
+```{r, supplementary fig 1 slow growing network plot, fig.width = 8, fig.height=12, echo=FALSE}
 
 par(mfrow=c(2,1))
 
@@ -1370,34 +1218,48 @@ text(-1,-1, paste("M=", round(modu2, digits=3), sep = ""), cex = 1.5)
 ```{r, fast growing network modules computing}
 
 #Slow growing species
-netlist<-networkplot(as.data.frame(c(fastsp)), length(fastsp))
+netlist<-networkplot(as.data.frame(c(fastsp)), length(fastsp))#personal function defined in "function_competition_networks.R"
+#it returns a list of igraph objects and a list of species cluster membership
+#adding treatments as names of the list
 names(netlist)<-rep(names(all),each = 2)
+#fast growing species color code
 colfast<-rep("chartreuse4", lenght.out=length(fastsp))
 
 #Control network plot
 gcont<-netlist$`June C`
+#saves species cluster membership
 clucont<-netlist[[2]]
+#formats in a dataframe
 indclasscont<-data.frame(values=c(fastsp),ind=as.character(clucont$membership))
+#defines color of clusters
 colcont<-c("1"="honeydew3", "2"="khaki3", "3"="navajowhite3")
+#matches the colors with the membership
 V(gcont)$color <- colcont[indclasscont$ind[match(V(gcont)$name,indclasscont$values)]]
+#color code of interactions
 E(gcont)$color<-"mediumorchid4"
 E(gcont)[weight>=0]$color<-"sienna1"
 
 #no need for permutations here
 
+#saves modularity
 modu3<-modularity(gcont,membership(clucont), weights = abs(E(gcont)$weight))
 
 
 #Fungicide network plot
 gfun<-netlist$`June F`
+#saves species cluster membership
 clufun<-netlist[[6]]
+#formats in a dataframe
 indclassfun<-data.frame(values=c(fastsp),ind=as.character(clufun$membership))
-
+#defines color of clusters
 colfun<-c("1"="honeydew3", "2"="navajowhite3", "3"="khaki3")
+#matches the colors with the membership
 V(gfun)$color <- colfun[indclassfun$ind[match(V(gfun)$name,indclassfun$values)]]
+#color code of interactions
 E(gfun)$color<-"mediumorchid4"
 E(gfun)[weight>=0]$color<-"sienna1"
 
+#reorders species for better graphical representation
 gfun1 <- igraph::permute(gfun,c(V(gfun)[1], 
                                   V(gfun)[2],
                                   V(gfun)[3],  
@@ -1407,11 +1269,12 @@ gfun1 <- igraph::permute(gfun,c(V(gfun)[1],
                                   V(gfun)[7], 
                                   V(gfun)[8]))
 
+#saves modularity
 modu4<-modularity(gfun,membership(clufun), weights = abs(E(gfun)$weight))
 
 ```
 
-```{r, fast growing network plot, fig.width = 8, fig.height=12, echo=FALSE}
+```{r, supplementary fig 1 fast growing network plot, fig.width = 8, fig.height=12, echo=FALSE}
 
 par(mfrow=c(2,1))
 
@@ -1430,7 +1293,7 @@ text(-1,-1, paste("M=", round(modu4, digits=3), sep = ""), cex = 1.5)
 
 ```
 
-# 3. Network metrics for communities of 5, 7, 11 and 15 species {-}
+## b. Network metrics for communities of 5, 7, 11 and 15 species {-}
 
 In order to check whether the size of the network will impact the effect of treatment, season or SLA and SLA variance on our network metrics, we looked at the effect of several network size (5, 7, 11, or 15 species). This code is heavy to run **and will take at least 4 hours** to be fully computed. Once again, you can simply load the output in the R environment "results/richness_data_5-7-11-15-18_species.Rdata". 
 
@@ -1634,7 +1497,7 @@ load(file ="results/multimembership_results_richness_5-7-11-15-18_species.Rdata"
 
 ```
 
-```{r, plot of supp fig. 4 and 5, fig.width = 14, fig.height = 16, fig.align ='center'}
+```{r, plot of supp fig. 4 and 5, fig.width = 14, fig.height = 16, fig.align ='center', echo=FALSE}
 
 ggarrange(diagrichpred, 
           asymrichpred, 
@@ -1649,5 +1512,204 @@ ggarrange(diagrichvpred,
           ginirichvpred, 
           modurichvpred,
           common.legend = T, label.x = " ", ncol=1,nrow=5)
+
+```
+
+```{r, supplementary table 3}
+modelist<- list(m2,m3,m4,m5,m1)
+names(modelist) <- c("Diagonal dominance", "Asymmetry", "Skewness", "Evenness", "Modularity")
+modelsummary(modelist, statistic = "p.value", fmt = fmt_statistic(estimate = 2, p.value = 3))
+
+```
+
+
+## c. Individual species effect {-}
+
+In order to interpret in details the results of our multimembership models, we ran some extra analysis to detect any species effects.
+
+- insight on the fungicide effect
+
+First, we used PaNDiv experiment cover data from 2020, to fit a linear model between the species average competitive response and the change in their cover with fungicide addition in June 2020.
+
+``` {r, fungicide competition response versus cover }
+#first, we need to do a little bit of data formatting from long to large cover data format
+dat2020 <- read.table("data/202005_perco.txt", sep = "\t", header = T)
+
+#changing names to same format and deleting useless columns
+names(dat2020)[names(dat2020)=="Datum"]<-"datum"
+names(dat2020)[names(dat2020)=="Plot_Nr"]<-"plot"
+names(dat2020)[names(dat2020)=="Weed_species"]<-"species"
+
+dat2020$Person<-NULL
+dat2020$Block<-NULL
+dat2020$original_species_in_non_VIP<-NULL
+dat2020$Comments<-NULL
+
+#simplifying dates (all are June cover)
+dat2020$datum<-2020
+
+#2020 table
+datot20<-matrix(data=0, nrow=336, ncol=26, byrow = F, dimnames = NULL)
+colnames(datot20)<-c("year","plot","Am","Ao","As","Be","Cb","Cj","Dc","Dg","Fr","Ga",
+                     "Hl","Hp","Hs","Lp","Pg","Pm","Pt","Ra","Sp","To","bg",
+                     "legume","herb","grass")
+datot20<-as.data.frame(datot20)
+dat2020<-as.data.frame(dat2020)
+dat2020<-dat2020[order(dat2020$plot),]
+
+#loop for filling 2020 cover table (large format)
+i<-1
+j<-1
+k<-1
+datot20$plot[i]<-i
+datot20$year[i]<-2020
+
+datot20<-tryCatch({
+for (i in 1:nrow(datot20)){
+  for (k in 1:nrow(dat2020)) {
+    while (datot20$plot[i]==dat2020$plot[k]) {
+      for (j in 1:ncol(datot20)) {
+        if (colnames(datot20)[j]==dat2020$species[k]){
+          datot20[i,j]<-dat2020$X.weeded[k]
+          j<-j+1
+        }
+        else{
+          j<-j+1
+        }
+      }
+      k<-k+1
+      j<-1
+    }
+  }
+  i<-i+1
+  datot20$plot[i]<-i
+  datot20$year[i]<-2020
+}
+},
+error = function (e) {
+  return(datot20)
+})
+
+datot20$sum<-rowSums(datot20[,3:26])
+
+rel.cov20<-datot20[,3:26]
+rel.cov20<-rel.cov20/datot20$sum
+rel.cov20$plot<-datot20$plot
+
+#adding treatment info to the plot
+info<-read.table("data/plot_all.txt", sep = "\t", header = T)
+rel.cov20$Nitrogen<-info$N
+rel.cov20$Fungicide<-info$F
+
+#creating dataset for testing the fungicide effect
+test<-rel.cov20[1:24]
+test[test==0]<-NA
+test$Fungicide<-rel.cov20$Fungicide
+test$Nitrogen<-rel.cov20$Nitrogen
+
+# separating competitive effect from response
+amatrix<-colSums(alpha_june_control)
+bmatrix<-rowSums(alpha_june_control)
+ctest<-subset(test, test$Fungicide==0)
+cm<-colMeans(ctest, na.rm=T)
+ftest<-subset(test, test$Fungicide==1)
+fm<-colMeans(ftest, na.rm=T)
+
+#creating the variable of the change in percentage cover with fungicide
+diff<-fm-cm
+#removing species that are not in the phytometers data set
+diff$Hs<-NA
+diff$As<-NA
+diff<-diff[!is.na(diff)]
+diff<-unlist(diff,use.names=T)
+diff<-diff[1:18]
+#order them in the same order than competition matrix
+diff<-diff[order(names(diff))]
+amatrix<-amatrix[order(names(amatrix))]
+bmatrix<-bmatrix[order(names(bmatrix))]
+#creating final dataframe for testing the linear model
+x<-data.frame(diff=diff,amatrix=amatrix,bmatrix=bmatrix)
+
+#x[10,]<-NA #remove the 2 extremes? still significant
+#x[1,]<-NA
+
+x<-na.omit(x)
+model<-lm(data=x,diff~bmatrix)
+summary(model)
+
+```
+
+```{r,plot supplementary figure 5, fig.align ='center', fig.height=10, fig.width=10, echo = FALSE}
+
+plot(x$diff~x$bmatrix, xlab= "Average competitive effect", ylab = "Change in %cover with Fungicide")
+text(x$diff~x$bmatrix,labels=row.names(x),pos=4)
+abline(model)
+
+```
+
+- insight on the treatment effect at the species level
+
+Secondly, we wanted to test whether treatment impacted competition coefficients at the species level. For this, we plotted the change in competitive effect/response with treatment fo every species. The black line represents the values that would be obtained if there was no impact of the treatments.The dotted colored lines represent the obtained values by treatment (difference was not significant).
+
+```{r, species effect and response versus treatment}
+
+#difference of competitive effect by species with treatment
+bmatrix<-rowSums(alpha_june_control)
+bmatrixn<-rowSums(alpha_june_nitrogen)
+bmatrixf<-rowSums(alpha_june_fungicide)
+bmatrixnf<-rowSums(alpha_june_combined)
+bmatrixall<-data.frame(bmatrix,bmatrixn,bmatrixf, bmatrixnf)
+matsp<-rownames(bmatrixall)
+bmatrixall<-data.frame(bmatrix,bmatrixn,bmatrixf,bmatrixnf,matsp)
+#bmatrixall[6,]<-NA #check if Holcus lanatus is driving the pattern
+
+effect<-ggplot(data=bmatrixall,aes(x=bmatrix,y=bmatrixn))+
+  geom_smooth(aes(x=bmatrix,y=bmatrixn),method="lm",color="#7CAE00", alpha=0.3, fill="lightgray", linetype="dashed")+
+  geom_smooth(aes(x=bmatrix,y=bmatrixf),method="lm",color="#00BFC4", fill="lightgray", alpha=0.3, linetype="dashed")+
+  geom_smooth(aes(x=bmatrix,y=bmatrixnf),method="lm",color="#C77CFF", fill="lightgray", alpha=0.3, linetype="dashed")+
+  geom_point(color="#7CAE00")+
+  geom_text(aes(label=matsp),color="#7CAE00", hjust=1.5)+
+  geom_point(aes(x=bmatrix,y=bmatrixf), color="#00BFC4")+
+  geom_text(aes(x=bmatrix,y=bmatrixf,label=matsp), color="#00BFC4", hjust=1.5)+
+  geom_point(aes(x=bmatrix,y=bmatrixnf), color="#C77CFF")+
+  geom_text(aes(x=bmatrix,y=bmatrixnf,label=matsp), color="#C77CFF", hjust=1.5)+
+  geom_abline(intercept = 0, slope=1)+
+  xlim(c(-90,10))+ylim(c(-90,10))+
+  labs(title = "Changes in competitive effect with treatment June 2020", 
+       y="Competitive change with treatment : Nitrogen (green), Fungicide (blue), Combined (purple)", x="Competitive effect in control conditions")+
+  scale_fill_manual(values = c("#7CAE00","#00BFC4"), labels=c("Nitrogen","Fungicide"),drop=FALSE)+
+  theme_clean()+
+  theme(plot.background=element_blank())
+
+amatrix<-colSums(alpha_june_control)
+amatrixn<-colSums(alpha_june_nitrogen)
+amatrixf<-colSums(alpha_june_fungicide)
+amatrixnf<-colSums(alpha_june_combined)
+amatrixall<-data.frame(amatrix,amatrixn,amatrixf,amatrixnf)
+matsp<-rownames(amatrixall)
+amatrixall<-data.frame(amatrix,amatrixn,amatrixf, amatrixnf, matsp)
+
+response<-ggplot(data=amatrixall,aes(x=amatrix,y=amatrixn))+
+  geom_smooth(method="lm",color="#7CAE00", fill="lightgray", alpha=0.3, linetype="dashed")+
+  geom_smooth(aes(x=amatrix,y=amatrixf),method="lm",color="#00BFC4", fill="lightgray", alpha=0.3, linetype="dashed")+
+  geom_smooth(aes(x=amatrix,y=amatrixnf),method="lm",color="#C77CFF", fill="lightgray", alpha=0.3, linetype="dashed")+
+  geom_point(color="#7CAE00")+
+  geom_text(aes(label=matsp),color="#7CAE00", hjust=1.5)+
+  geom_point(aes(x=amatrix,y=amatrixf), color="#00BFC4")+
+  geom_text(aes(x=amatrix,y=amatrixf,label=matsp), color="#00BFC4", hjust=1.5)+
+  geom_point(aes(x=amatrix,y=amatrixnf), color="#C77CFF")+
+  geom_text(aes(x=amatrix,y=amatrixnf,label=matsp), color="#C77CFF", hjust=1.5)+
+  geom_abline(intercept = 0, slope=1)+
+  xlim(c(-90,10))+ylim(c(-90,10))+
+  labs(title = "Changes in competitive response with treatment June 2020", 
+       y=" ", x="Competitive response in control conditions")+
+  scale_color_manual(name="Treatments",values = c("#7CAE00","#00BFC4"), breaks=c("Nitrogen","Fungicide"))+
+  theme_clean()+
+  theme(plot.background=element_blank())
+```
+
+```{r, plot supplementary figure 6, fig.align ='center', fig.width=13, fig.height=8, echo = FALSE}
+
+ggarrange(effect, response)
 
 ```
