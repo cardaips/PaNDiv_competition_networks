@@ -22,7 +22,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE, 
                       message = FALSE, 
                       warning = FALSE,
-                      root.dir = "/code") # /!\ WARNING : make sure the knit directory is the project directory and not the document directory, it can be changed in knit options
+                      root.dir = paste(rprojroot::find_rstudio_root_file(), "/code", sep = "")) # /!\ WARNING : make sure the knit directory is the project directory and not the document directory, it can be changed in knit options
 options(knitr.duplicate.label = "allow")
 ```
 
@@ -43,7 +43,7 @@ pre {
 Here will be presented the data analysis attached with "Resource economics traits predict competition network structure and its response to resources and enemies." 
 <br>
 <br>
-In order to run this file, the attached R script "functions_competition_network.R" must be present in the "code" subfolder of the working directory, and all data must be present in a subfolder called "data". An R environment "all_competition_matrices.Rdata" is available in the "data" subfolder, for easy loading, but each matrix is also individually available if needed.
+In order to run this file, the attached R script "functions_competition_network.R" must be present in the "code" subfolder of the working directory, and all data must be present in a subfolder called "data". An R environment "all_competition_matrices.Rdata" is available in the "results" subfolder, for easy loading, but each matrix is also individually available if needed.
 <br>
 <br>
 To avoid long running time, several Rdata environments were also saved in the "result" folder, they can be loaded in the corresponding parts of the script.
@@ -78,7 +78,7 @@ library("modelsummary") # another package for summarising model outputs because 
 ```
 
 ```{r working directoy}
-path<-"~/PhD/GitHub Repos/PaNDiv_competition_networks"
+path<-rprojroot::find_rstudio_root_file() #if needed, change to your own path
 setwd(path)
 ```
 
@@ -475,14 +475,14 @@ alpha_august_nitrogen<-as.matrix(alpha_august_nitrogen)
 alpha_august_fungicide<-as.matrix(alpha_august_fungicide)
 alpha_august_combined<-as.matrix(alpha_august_combined)
 
-save.image(file = "data/all_competition_matrices.Rdata")
+save.image(file = "results/all_competition_matrices.Rdata")
 
 ```
 
 For an easy load, you can just load "all_competition_matrices.Rdata"
 
 ``` {r, easy competition matrices load}
-load(file ="data/all_competition_matrices.Rdata")
+load(file ="results/all_competition_matrices.Rdata")
 ```
 
 We then plotted the interaction matrices in order to obtain Fig. 1 (here we present August matrices as well).
