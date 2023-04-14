@@ -1496,8 +1496,10 @@ save.image(file = "results/multimembership_results_richness_5-7-11-15-18_species
 load(file ="results/multimembership_results_richness_5-7-11-15-18_species.Rdata")
 
 ```
-
-```{r, plot of supp fig. 4 and 5, fig.width = 14, fig.height = 16, fig.align ='center', echo=FALSE}
+<br>
+From the results of these multimembership model, we can plot the Supplementary figure 4, which present the impact of treatment and SLA on mixed communities of different size across June and August 2020.
+<br>
+```{r, plot of supp fig. 4, fig.width = 14, fig.height = 16, fig.align ='center', echo=FALSE}
 
 ggarrange(diagrichpred, 
           asymrichpred, 
@@ -1505,6 +1507,15 @@ ggarrange(diagrichpred,
           ginirichpred, 
           modurichpred,
           common.legend = T, label.x = " ", ncol=1,nrow=5)
+
+
+```
+<br>
+And the Supplementary figure 5, which present the impact of treatment and SLA variance on mixed communities of different size across June and August 2020.
+<br>
+```{r, plot of supp fig. 5, fig.width = 14, fig.height = 16, fig.align ='center', echo=FALSE}
+
+
 
 ggarrange(diagrichvpred, 
           asymrichvpred, 
@@ -1515,10 +1526,16 @@ ggarrange(diagrichvpred,
 
 ```
 
+Then, we can also look at the model output directly and plot the Supplementary table 3,
 ```{r, supplementary table 3}
 modelist<- list(m2,m3,m4,m5,m1)
 names(modelist) <- c("Diagonal dominance", "Asymmetry", "Skewness", "Evenness", "Modularity")
-modelsummary(modelist, statistic = "p.value", fmt = fmt_statistic(estimate = 2, p.value = 3))
+modelsummary(modelist, statistic = NULL,
+             estimate = "{estimate}{stars} ({p.value})",
+             fmt = fmt_statistic(estimate = 2, p.value = 3),
+             coef_rename = c("SLAv" = "SLA variance", "network.size.L"="network size (linear)", "Nitrogen1" = "Nitrogen", "Fungicide1" = "Fungicide"),
+             coef_omit = "(Intercept)|network.size.C|network.size.Q",
+             stars = T)
 
 ```
 
