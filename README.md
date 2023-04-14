@@ -23,6 +23,6 @@ The two "perco.txt" files are percentage cover of the experimental field from Ju
 
 This folder contains useful Renvironment files, that allow a quick loading and knitting of the Rmarkdown file.
 
-**WARNING:** Here, only the lighter files are available. To get all Renvironment files useful for quick loading, go to : ....... , download the files and **put them in the results folder with the other Renvironment files**. 
+**WARNING:** Here, only the lighter files are available. To get all Renvironment files useful for quick loading, go to : ....... , download the files and *put them in the results folder with the other Renvironment files*. 
 
 For any questions, contact : caroline.daniel@ips.unibe.ch
