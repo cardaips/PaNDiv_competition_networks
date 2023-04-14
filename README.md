@@ -11,6 +11,8 @@ The "custom.css" file is used to specify some appeareance settings for the Rmark
 
 The "function_competition_network.R" file contains personal functions that are used in the analysis.
 
+**WARNING:** In order to knit the Rmarkdown proprely, make sure the knit directory is the project directory and not the document directory, it can be changed in the *knit options*
+
 ### data folder
 
 In the data folder, you can find all competition matrices used during the analysis, as text files which names start with "biommatrix", and their associated standard errors, which are named "SE_biommatrix". A total of 8 matrices are present, one per treatment (4) per sampling period (2).
