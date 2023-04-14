@@ -11,7 +11,7 @@ The "custom.css" file is used to specify some appeareance settings for the Rmark
 
 The "function_competition_network.R" file contains personal functions that are used in the analysis.
 
-**WARNING:** In order to knit the Rmarkdown proprely, make sure the knit directory is the project directory and not the document directory, it can be changed in the *knit options* as follow:
+**WARNING:** In order to knit the Rmarkdown properly, make sure the knit directory is the project directory and not the document directory, it can be changed in the *knit options* as follow:
 
 <img width="273" alt="image" src="https://user-images.githubusercontent.com/55712198/232017558-f8c2e2ac-05cf-4f1c-a3ad-466b39f42172.png">
 
