@@ -5,7 +5,7 @@ Data from PaNDiv experiment and code for the analysis of "Resource economics tra
 
 ### code folder
 
-In the code folder, you will find the Rmarkdown that contains the full analysis, called "PaNDic_competition_network_full_analysis.Rmd". You will also find its .html output which is identical to the "index.html" file used for webpage deployment.
+In the code folder, you will find the Rmarkdown that contains the full analysis, called "PaNDiv_competition_network_full_analysis.Rmd". You will also find its .html output which is identical to the "index.html" file used for webpage deployment.
 
 The "custom.css" file is used to specify some appeareance settings for the Rmarkdown file.
 
