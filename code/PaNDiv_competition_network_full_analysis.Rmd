@@ -1122,7 +1122,7 @@ g1
 
 ## a. Plotting networks and modules {-}
 
-In order to visualize the impact of fungicide on modularity of slow and fast growing species, we represented networks as igraph objects and showed how the `cluster_optimize()` function creates groups of species that interact strongly together, maximizing the modularity. We also added the M, modularity value for each network.
+In order to visualize the impact of fungicide on modularity of slow and fast growing species and plot Supplementary figure 1, we represented networks as igraph objects and showed how the `cluster_optimize()` function creates groups of species that interact strongly together, maximizing the modularity. We also added the M, modularity value for each network.
 
 - Slow growing species modules, fungicide effect
 ```{r, slow growing network modules computing}
@@ -1533,7 +1533,7 @@ names(modelist) <- c("Diagonal dominance", "Asymmetry", "Skewness", "Evenness", 
 modelsummary(modelist, statistic = NULL,
              estimate = "{estimate}{stars} ({p.value})",
              fmt = fmt_statistic(estimate = 2, p.value = 3),
-             coef_rename = c("SLAv" = "SLA variance", "network.size.L"="network size (linear)", "Nitrogen1" = "Nitrogen", "Fungicide1" = "Fungicide"),
+             coef_rename = c("SLAv" = "SLA variance", "network.size.L"="Network size (linear)", "Nitrogen1" = "Nitrogen", "Fungicide1" = "Fungicide"),
              coef_omit = "(Intercept)|network.size.C|network.size.Q",
              stars = T)
 
@@ -1655,8 +1655,8 @@ model<-lm(data=x,diff~bmatrix)
 summary(model)
 
 ```
-
-```{r,plot supplementary figure 5, fig.align ='center', fig.height=10, fig.width=10, echo = FALSE}
+We can then plot Supplementary figure 6,
+```{r,plot supplementary figure 6, fig.align ='center', fig.height=10, fig.width=10, echo = FALSE}
 
 plot(x$diff~x$bmatrix, xlab= "Average competitive effect", ylab = "Change in %cover with Fungicide")
 text(x$diff~x$bmatrix,labels=row.names(x),pos=4)
@@ -1666,7 +1666,7 @@ abline(model)
 
 - insight on the treatment effect at the species level
 
-Secondly, we wanted to test whether treatment impacted competition coefficients at the species level. For this, we plotted the change in competitive effect/response with treatment fo every species. The black line represents the values that would be obtained if there was no impact of the treatments.The dotted colored lines represent the obtained values by treatment (difference was not significant).
+Secondly, we wanted to test whether treatment impacted competition coefficients at the species level. For this, we plotted Supplementary figure 7, the change in competitive effect (response is also presented here) with treatment for every species. The black line represents the values that would be obtained if there was no impact of the treatments.The dotted colored lines represent the obtained values by treatment (the difference was not significant).
 
 ```{r, species effect and response versus treatment}
 
@@ -1725,7 +1725,7 @@ response<-ggplot(data=amatrixall,aes(x=amatrix,y=amatrixn))+
   theme(plot.background=element_blank())
 ```
 
-```{r, plot supplementary figure 6, fig.align ='center', fig.width=13, fig.height=8, echo = FALSE}
+```{r, plot supplementary figure 7, fig.align ='center', fig.width=13, fig.height=8, echo = FALSE}
 
 ggarrange(effect, response)
 
