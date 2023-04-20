@@ -694,7 +694,7 @@ sla<- read.table("data/SLA_PaNDiv_2016-2019.txt",header = T)
 sla<-cbind(sla,str_split_fixed(sla$sampling.period, "/", 3)) # explicit date of sampling period
 colnames(sla)[12:14]<-c("month","day","year") 
 sla$day<-NULL # remove useless data
-sla2019<-subset(sla,sla$year=="2019") # only using data collected in 2019
+sla2019<-na.omit(sla)# average sla across the 4 years #subset(sla,sla$year=="2019") # only using data collected in 2019
 meansla2019nonlog<-sla2019 %>% group_by(Species) %>% summarise_at(vars(mean_SLA), list(value=mean)) #averaging both June and August SLA
 meansla2019<-meansla2019nonlog # saving non log values in a variable, just in case
 meansla2019$value<-log(meansla2019$value) # log transform SLA values
@@ -918,7 +918,7 @@ asympred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
   #facet_grid(~Season)+ #add to look at the two sampling periods separately
   geom_line(size=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
-  ylim(c(-0.70,0.7))+
+  #ylim(c(-0.70,0.7))+
   ylab("Asymmetry")+
   xlab(" ")+
   theme_bw()
@@ -928,7 +928,7 @@ asymvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
   #facet_grid(~Season)+ #add to look at the two sampling periods separately
   geom_line(size=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
-  ylim(c(-0.7,0.7))+
+  #ylim(c(-0.7,0.7))+
   xlab(" ")+
   theme_bw()
 
@@ -956,7 +956,7 @@ skewpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
   #facet_grid(~Season)+ #add to look at the two sampling periods separately
   geom_line(size=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
-  ylim(c(-1.5,1.5))+
+  #ylim(c(-1.5,1.5))+
   ylab("Skewness")+
   xlab(" ")+
   theme_bw()
@@ -965,7 +965,7 @@ skewvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
   #facet_grid(~Season)+ #add to look at the two sampling periods separately
   geom_line(size=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+  
-  ylim(c(-1.5,1.5))+
+  #ylim(c(-1.5,1.5))+
   xlab(" ")+
   theme_bw()
 
@@ -992,7 +992,7 @@ datapredb<-subset(datapred, datapred$Treatment=="Control"|datapred$Treatment=="N
 
 ginipred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
   #facet_grid(~Season)+ #add to look at the two sampling periods separately
-  ylim(c(-0.5,2.5))+
+  #ylim(c(-0.5,2.5))+
   geom_line(size=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylab("Evenness")+
@@ -1001,7 +1001,7 @@ ginipred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
 
 ginivpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
   #facet_grid(~Season)+ #add to look at the two sampling periods separately
-  ylim(c(-0.5,2.5))+
+  #ylim(c(-0.5,2.5))+
   geom_line(size=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   xlab(" ")+
@@ -1028,7 +1028,7 @@ datavpred<-aggregate(cbind(fit,lwr,upr)~SLAv+Treatment,FUN=mean,data= datavpred)
 
 modupred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
   #facet_grid(~Season)+ #add to look at the two sampling periods separately
-  ylim(c(-2,2))+
+  #ylim(c(-2,2))+
   geom_line(linewidth=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylab("Modularity")+
@@ -1037,7 +1037,7 @@ modupred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
 moduvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
   #facet_grid(~Season)+ #add to look at the two sampling periods separately
   geom_line(linewidth=0.8)+
-  ylim(c(-2,2))+
+  #ylim(c(-2,2))+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   xlab("SLA variance")+
   theme_bw()
@@ -1539,7 +1539,6 @@ modelsummary(modelist, statistic = NULL,
 
 ```
 
-
 ## c. Individual species effect {-}
 
 In order to interpret in details the results of our multimembership models, we ran some extra analysis to detect any species effects.
@@ -1692,7 +1691,7 @@ effect<-ggplot(data=bmatrixall,aes(x=bmatrix,y=bmatrixn))+
   geom_text(aes(x=bmatrix,y=bmatrixnf,label=matsp), color="#C77CFF", hjust=1.5)+
   geom_abline(intercept = 0, slope=1)+
   xlim(c(-90,10))+ylim(c(-90,10))+
-  labs(title = "Changes in competitive effect with treatment June 2020", 
+  labs(title = "Competitive effect with treatment June 2020", 
        y="Competitive change with treatment : Nitrogen (green), Fungicide (blue), Combined (purple)", x="Competitive effect in control conditions")+
   scale_fill_manual(values = c("#7CAE00","#00BFC4"), labels=c("Nitrogen","Fungicide"),drop=FALSE)+
   theme_clean()+
@@ -1718,7 +1717,7 @@ response<-ggplot(data=amatrixall,aes(x=amatrix,y=amatrixn))+
   geom_text(aes(x=amatrix,y=amatrixnf,label=matsp), color="#C77CFF", hjust=1.5)+
   geom_abline(intercept = 0, slope=1)+
   xlim(c(-90,10))+ylim(c(-90,10))+
-  labs(title = "Changes in competitive response with treatment June 2020", 
+  labs(title = "Competitive response with treatment June 2020", 
        y=" ", x="Competitive response in control conditions")+
   scale_color_manual(name="Treatments",values = c("#7CAE00","#00BFC4"), breaks=c("Nitrogen","Fungicide"))+
   theme_clean()+
@@ -1730,3 +1729,14 @@ response<-ggplot(data=amatrixall,aes(x=amatrix,y=amatrixn))+
 ggarrange(effect, response)
 
 ```
+
+- insight on the competitive effect versus response at the species level
+
+
+```{r}
+
+
+
+
+```
+
