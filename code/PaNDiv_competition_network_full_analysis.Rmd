@@ -883,6 +883,7 @@ diagpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
   geom_line(size=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylab("Diagonal dominance")+
+  ylim(c(-4,-8))+ #might need to change it if scaled
   xlab(" ")+
   theme_bw()
 
@@ -890,7 +891,9 @@ diagvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
   #facet_grid(~Season)+ #add to look at the two sampling periods separately
   geom_line(size=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
+  ylim(c(-4,-8))+ #might need to change it if scaled
   xlab(" ")+
+  ylab("")+
   theme_bw()
 
 ```
@@ -918,8 +921,7 @@ asympred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
   #facet_grid(~Season)+ #add to look at the two sampling periods separately
   geom_line(size=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
-  #ylim(c(-0.70,0.7))+
-  ylab("Asymmetry")+
+  ylim(c(1.3,2.0))+ #might need to change it if scaled  ylab("Asymmetry")+
   xlab(" ")+
   theme_bw()
 
@@ -928,7 +930,8 @@ asymvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
   #facet_grid(~Season)+ #add to look at the two sampling periods separately
   geom_line(size=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
-  #ylim(c(-0.7,0.7))+
+  ylim(c(1.3,2.0))+ #might need to change it if scaled
+  ylab("")+
   xlab(" ")+
   theme_bw()
 
@@ -956,7 +959,7 @@ skewpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
   #facet_grid(~Season)+ #add to look at the two sampling periods separately
   geom_line(size=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
-  #ylim(c(-1.5,1.5))+
+  ylim(c(-1.5,1.5))+ #might need to change it if scaled
   ylab("Skewness")+
   xlab(" ")+
   theme_bw()
@@ -965,8 +968,9 @@ skewvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
   #facet_grid(~Season)+ #add to look at the two sampling periods separately
   geom_line(size=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+  
-  #ylim(c(-1.5,1.5))+
+  ylim(c(-1.5,1.5))+ #might need to change it if scaled
   xlab(" ")+
+  ylab("")+
   theme_bw()
 
 ```
@@ -992,7 +996,7 @@ datapredb<-subset(datapred, datapred$Treatment=="Control"|datapred$Treatment=="N
 
 ginipred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
   #facet_grid(~Season)+ #add to look at the two sampling periods separately
-  #ylim(c(-0.5,2.5))+
+  ylim(c(0.35,0.65))+ #might need to change it if scaled
   geom_line(size=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylab("Evenness")+
@@ -1001,9 +1005,10 @@ ginipred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
 
 ginivpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
   #facet_grid(~Season)+ #add to look at the two sampling periods separately
-  #ylim(c(-0.5,2.5))+
+  ylim(c(0.35,0.65))+ #might need to change it if scaled
   geom_line(size=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
+  ylab("")+
   xlab(" ")+
   theme_bw()
 
@@ -1032,6 +1037,7 @@ modupred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
   geom_line(linewidth=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylab("Modularity")+
+  ylim(c(0,0.2))+ #might need to change it if scaled
   theme_bw()
 
 moduvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
@@ -1039,7 +1045,9 @@ moduvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
   geom_line(linewidth=0.8)+
   #ylim(c(-2,2))+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
+  ylab("")+
   xlab("SLA variance")+
+  ylim(c(0,0.2))+ #might need to change it if scaled
   theme_bw()
 
 #saving the models and predictions in an R environment
