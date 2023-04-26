@@ -785,15 +785,9 @@ comp<-rbind(slownet, mixnet, fastnet)
 
 Once we obtained the data frame with all network metrics for every community, we scaled the variable in order to compare their effect sizes in the multimembership models.
 ``` {r, scaling variables}
-
 savecomp<-comp # save the competition data frame before scaling just in case
 
-#scaling all variables
-comp$Modularity<-scale(comp$Modularity, center = T)
-comp$Diagstrength<-scale(comp$Diagstrength, center = T)
-comp$Asymmetry<-scale(comp$Asymmetry, center = T)
-comp$Skewness<-scale(comp$Skewness, center = T)
-comp$Gini<-scale(comp$Gini, center = T)
+#scaling response variables
 comp$SLAv<-scale(comp$SLAv, center = T)
 comp$SLA<-scale(comp$SLA, center = T)
 
@@ -883,7 +877,7 @@ diagpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
   geom_line(size=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylab("Diagonal dominance")+
-  ylim(c(-4,-8))+ #might need to change it if scaled
+  ylim(c(-9,-5))+ #might need to change it if scaled
   xlab(" ")+
   theme_bw()
 
@@ -891,7 +885,7 @@ diagvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
   #facet_grid(~Season)+ #add to look at the two sampling periods separately
   geom_line(size=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
-  ylim(c(-4,-8))+ #might need to change it if scaled
+  ylim(c(-9,-5))+ #might need to change it if scaled
   xlab(" ")+
   ylab("")+
   theme_bw()
@@ -959,7 +953,7 @@ skewpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
   #facet_grid(~Season)+ #add to look at the two sampling periods separately
   geom_line(size=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
-  ylim(c(-1.5,1.5))+ #might need to change it if scaled
+  ylim(c(-1.5,0.5))+ #might need to change it if scaled
   ylab("Skewness")+
   xlab(" ")+
   theme_bw()
@@ -968,7 +962,7 @@ skewvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
   #facet_grid(~Season)+ #add to look at the two sampling periods separately
   geom_line(size=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+  
-  ylim(c(-1.5,1.5))+ #might need to change it if scaled
+  ylim(c(-1.5,0.5))+ #might need to change it if scaled
   xlab(" ")+
   ylab("")+
   theme_bw()
@@ -996,7 +990,7 @@ datapredb<-subset(datapred, datapred$Treatment=="Control"|datapred$Treatment=="N
 
 ginipred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
   #facet_grid(~Season)+ #add to look at the two sampling periods separately
-  ylim(c(0.35,0.65))+ #might need to change it if scaled
+  ylim(c(0.4,0.65))+ #might need to change it if scaled
   geom_line(size=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylab("Evenness")+
@@ -1005,7 +999,7 @@ ginipred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
 
 ginivpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
   #facet_grid(~Season)+ #add to look at the two sampling periods separately
-  ylim(c(0.35,0.65))+ #might need to change it if scaled
+  ylim(c(0.4,0.65))+ #might need to change it if scaled
   geom_line(size=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylab("")+
@@ -1037,7 +1031,7 @@ modupred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
   geom_line(linewidth=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylab("Modularity")+
-  ylim(c(0,0.2))+ #might need to change it if scaled
+  ylim(c(0.05,0.2))+ #might need to change it if scaled
   theme_bw()
 
 moduvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
@@ -1047,7 +1041,7 @@ moduvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylab("")+
   xlab("SLA variance")+
-  ylim(c(0,0.2))+ #might need to change it if scaled
+  ylim(c(0.05,0.2))+ #might need to change it if scaled
   theme_bw()
 
 #saving the models and predictions in an R environment
@@ -1077,6 +1071,49 @@ ggarrange(diagpred,diagvpred,
 Then, with the model outputs we can also plot the effects sizes (Fig. 3)
 
 ```{r, plot of fig. 3, fig.width = 14, fig.height = 8, fig.align ='center' }
+#scaling all variables to compare effect sizes
+comp$Modularity<-scale(comp$Modularity, center = T)
+comp$Diagstrength<-scale(comp$Diagstrength, center = T)
+comp$Asymmetry<-scale(comp$Asymmetry, center = T)
+comp$Skewness<-scale(comp$Skewness, center = T)
+comp$Gini<-scale(comp$Gini, center = T)
+
+#re run models with scaled variables
+#Diagonal dominance
+lmod <- lFormula(Diagstrength~Nitrogen*Fungicide*(SLA+SLAv)+Season*(SLA+SLAv)+(1|Species), data=comp)
+lmod$reTrms$Zt <- lmod$reTrms$Ztlist[[1]] <- Matrix(t(speciesmat))
+devfun <- do.call(mkLmerDevfun, lmod)
+opt <- optimizeLmer(devfun)
+m2 <- mkMerMod(environment(devfun), opt, lmod$reTrms, fr = lmod$fr)
+
+#Asymmetry
+lmod <- lFormula(Asymmetry~Nitrogen*Fungicide*(SLA+SLAv)+Season*(SLA+SLAv)+(1|Species), data=comp)
+lmod$reTrms$Zt <- lmod$reTrms$Ztlist[[1]] <- Matrix(t(speciesmat))
+devfun <- do.call(mkLmerDevfun, lmod)
+opt <- optimizeLmer(devfun)
+m3 <- mkMerMod(environment(devfun), opt, lmod$reTrms, fr = lmod$fr)
+
+#Skewness
+lmod <- lFormula(Skewness~Nitrogen*Fungicide*(SLA+SLAv)+Season*(SLA+SLAv)+(1|Species), data=comp)
+lmod$reTrms$Zt <- lmod$reTrms$Ztlist[[1]] <- Matrix(t(speciesmat))
+devfun <- do.call(mkLmerDevfun, lmod)
+opt <- optimizeLmer(devfun)
+m4 <- mkMerMod(environment(devfun), opt, lmod$reTrms, fr = lmod$fr)
+
+#Evenness
+lmod <- lFormula(1-Gini~Nitrogen*Fungicide*(SLA+SLAv)+Season*(SLA+SLAv)+(1|Species), data=comp)
+lmod$reTrms$Zt <- lmod$reTrms$Ztlist[[1]] <- Matrix(t(speciesmat))
+devfun <- do.call(mkLmerDevfun, lmod)
+opt <- optimizeLmer(devfun)
+m5 <- mkMerMod(environment(devfun), opt, lmod$reTrms, fr = lmod$fr)
+
+#Modularity
+lmod <- lFormula(Modularity~Nitrogen*Fungicide*(SLA+SLAv)+Season*(SLA+SLAv)+(1|Species), data=comp)
+lmod$reTrms$Zt <- lmod$reTrms$Ztlist[[1]] <- Matrix(t(speciesmat))
+devfun <- do.call(mkLmerDevfun, lmod)
+opt <- optimizeLmer(devfun)
+m1 <- mkMerMod(environment(devfun), opt, lmod$reTrms, fr = lmod$fr)
+
 # summarise the model outputs
 models<- list(m2,m3,m4,m5,m1)
 models<-dvnames(models)
@@ -1330,13 +1367,8 @@ This code is also long to run, **around 5 hours**, the output can be found direc
 allrich_data<-melt(allrich, id=colnames(allrich[[1]]))
 allrich_data$L1<-NULL
 
-#scale the variables
+#scale the response variables
 allrich_data$SLA<-scale(allrich_data$SLA, center = T)
-allrich_data$Modularity<-scale(allrich_data$Modularity, center = T)
-allrich_data$Diagstrength<-scale(allrich_data$Diagstrength, center = T)
-allrich_data$Asymmetry<-scale(allrich_data$Asymmetry, center = T)
-allrich_data$Skewness<-scale(allrich_data$Skewness, center = T)
-allrich_data$Gini<-scale(allrich_data$Gini, center = T)
 allrich_data$SLAv<-scale(allrich_data$SLAv, center = T)
 
 
@@ -1372,7 +1404,6 @@ allrich_data$network.size<-ordered(allrich_data$network.size)
 #multi membership initialisation
 Species <- rep(LETTERS[1:18], length.out= nrow(allrich_data))
 allrich_data$Species<-Species
-
 
 #Diagonal dominance
 lmod <- lFormula(Diagstrength~Nitrogen*Fungicide*network.size+Nitrogen*Fungicide*(SLA+SLAv)+(1|Species), data=allrich_data)
@@ -1523,8 +1554,6 @@ And the Supplementary figure 5, which present the impact of treatment and SLA va
 <br>
 ```{r, plot of supp fig. 5, fig.width = 14, fig.height = 16, fig.align ='center', echo=FALSE}
 
-
-
 ggarrange(diagrichvpred, 
           asymrichvpred, 
           skewrichvpred,
@@ -1536,6 +1565,50 @@ ggarrange(diagrichvpred,
 
 Then, we can also look at the model output directly and plot the Supplementary table 3,
 ```{r, supplementary table 3}
+
+#scaling all variables
+allrich_data$Modularity<-scale(allrich_data$Modularity, center = T)
+allrich_data$Diagstrength<-scale(allrich_data$Diagstrength, center = T)
+allrich_data$Asymmetry<-scale(allrich_data$Asymmetry, center = T)
+allrich_data$Skewness<-scale(allrich_data$Skewness, center = T)
+allrich_data$Gini<-scale(allrich_data$Gini, center = T)
+
+#re running models with scaled variables to compare effect sizes
+#Diagonal dominance
+lmod <- lFormula(Diagstrength~Nitrogen*Fungicide*network.size+Nitrogen*Fungicide*(SLA+SLAv)+(1|Species), data=allrich_data)
+lmod$reTrms$Zt <- lmod$reTrms$Ztlist[[1]] <- Matrix(t(speciesmat))
+devfun <- do.call(mkLmerDevfun, lmod)
+opt <- optimizeLmer(devfun)
+m2 <- mkMerMod(environment(devfun), opt, lmod$reTrms, fr = lmod$fr)
+
+#Asymmetry
+lmod <- lFormula(Asymmetry~Nitrogen*Fungicide*network.size+Nitrogen*Fungicide*(SLA+SLAv)+(1|Species), data=allrich_data)
+lmod$reTrms$Zt <- lmod$reTrms$Ztlist[[1]] <- Matrix(t(speciesmat))
+devfun <- do.call(mkLmerDevfun, lmod)
+opt <- optimizeLmer(devfun)
+m3 <- mkMerMod(environment(devfun), opt, lmod$reTrms, fr = lmod$fr)
+
+#Skewness
+lmod <- lFormula(Skewness~Nitrogen*Fungicide*network.size+Nitrogen*Fungicide*(SLA+SLAv)+(1|Species), data=allrich_data)
+lmod$reTrms$Zt <- lmod$reTrms$Ztlist[[1]] <- Matrix(t(speciesmat))
+devfun <- do.call(mkLmerDevfun, lmod)
+opt <- optimizeLmer(devfun)
+m4 <- mkMerMod(environment(devfun), opt, lmod$reTrms, fr = lmod$fr)
+
+#Evenness
+lmod <- lFormula(1-Gini~Nitrogen*Fungicide*network.size+Nitrogen*Fungicide*(SLA+SLAv)+(1|Species), data=allrich_data)
+lmod$reTrms$Zt <- lmod$reTrms$Ztlist[[1]] <- Matrix(t(speciesmat))
+devfun <- do.call(mkLmerDevfun, lmod)
+opt <- optimizeLmer(devfun)
+m5 <- mkMerMod(environment(devfun), opt, lmod$reTrms, fr = lmod$fr)
+
+#Modularity
+lmod <- lFormula(Modularity~Nitrogen*Fungicide*network.size+Nitrogen*Fungicide*(SLA+SLAv)+(1|Species), data=allrich_data)
+lmod$reTrms$Zt <- lmod$reTrms$Ztlist[[1]] <- Matrix(t(speciesmat))
+devfun <- do.call(mkLmerDevfun, lmod)
+opt <- optimizeLmer(devfun)
+m1 <- mkMerMod(environment(devfun), opt, lmod$reTrms, fr = lmod$fr)
+
 modelist<- list(m2,m3,m4,m5,m1)
 names(modelist) <- c("Diagonal dominance", "Asymmetry", "Skewness", "Evenness", "Modularity")
 modelsummary(modelist, statistic = NULL,
