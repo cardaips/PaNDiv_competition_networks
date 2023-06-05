@@ -1811,7 +1811,7 @@ ggarrange(effect, response)
 
 ```
 
-- insight on the competitive effect versus response at the species level
+- insight on the SLA shift in PaNDiv after nitrogen addition
 
 
 ```{r}
