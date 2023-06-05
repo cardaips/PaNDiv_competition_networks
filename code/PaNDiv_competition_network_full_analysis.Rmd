@@ -57,6 +57,8 @@ To avoid long running time, several Rdata environments were also saved in the "r
 library("rmdformats") # this package needs to be loaded to knit
 library("tidyr") # data wrangling
 library("dplyr") # data wrangling
+library("readxl") # useful to open data for supp fig. 8
+library("Rmisc") # data wrangling for supp figure 8
 library("stringr") # data wrangling
 library("ggplot2") # plotting package
 library("ggthemes") # plotting package
@@ -1816,8 +1818,47 @@ ggarrange(effect, response)
 
 ```{r}
 
+tg <- read_excel("data/SLA shift.xlsx")
+tg$Delta_SLA<-as.numeric(tg$Delta_SLA)
+tg <- na.omit(tg)
 
+tg$Treatment<-NA
+for (i in 1:nrow(tg)) {
+  if (tg$Nitrogen[i] == 0 & tg$Fungicide[i] == 0) {
+    tg$Treatment[i]<- "C"
+  }
+  if (tg$Nitrogen[i] == 0 & tg$Fungicide[i] == 1)  {
+    tg$Treatment[i]<- "F"
+  }
+  if (tg$Nitrogen[i] == 1 & tg$Fungicide[i] == 0)  {
+    tg$Treatment[i]<- "N"
+  }
+   if (tg$Nitrogen[i] == 1 & tg$Fungicide[i] == 1)  {
+    tg$Treatment[i]<- "NF"
+  }
+  
+}
 
+tg$Treatment<-as.factor(tg$Treatment)
+tg$Treatment<-factor(tg$Treatment, levels = c("C","N","F","NF"))
+
+tgc <- Rmisc::summarySE(tg, measurevar="Delta_SLA", groupvars=c("Treatment","Year")) ##sd,seֵ
+pd <- position_dodge(0.3)
+a1 <- ggplot(tgc, aes(x=Year, y=Delta_SLA, colour=Treatment, group=Treatment)) + 
+  geom_errorbar(aes(ymin=Delta_SLA-se, ymax=Delta_SLA+se), colour="black", width=.1, position=pd)+
+  geom_point(position=pd, size=3)+
+  theme_bw()+
+  theme(panel.grid = element_blank(),
+        panel.background = element_blank(),
+        panel.border = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank(),
+        axis.line = element_line(colour = "black") )
+```
+
+```{r, plot supplementary figure 8, fig.align ='center', fig.width=13, fig.height=8, echo = FALSE}
+
+a1
 
 ```
 
