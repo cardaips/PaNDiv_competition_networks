@@ -1813,41 +1813,53 @@ ggarrange(effect, response)
 
 ```
 
-- insight on the SLA shift in PaNDiv after nitrogen addition
+## d. PaNDiv SLA shift with treatment {-}
 
+Lastly, we used PaNDiv cover and SLA data in order to check the plots shift in SLA with nitrogen treatment (monocultures were excluded). A negative Delta_SLA means that communities are shifting toward lower values of SLA, and that they become more slow growing.
+ 
+- insight on the nitrogen effect and SLA shift in PaNDiv plots 
 
 ```{r}
 
-tg <- read_excel("data/SLA shift.xlsx")
-tg$Delta_SLA<-as.numeric(tg$Delta_SLA)
-tg <- na.omit(tg)
+SLA_data <- read_excel("data/SLA shift.xlsx")
+SLA_data$Delta_SLA<-as.numeric(SLA_data$Delta_SLA)
+SLA_data <- na.omit(SLA_data)
 
-tg$Treatment<-NA
-for (i in 1:nrow(tg)) {
-  if (tg$Nitrogen[i] == 0 & tg$Fungicide[i] == 0) {
-    tg$Treatment[i]<- "C"
+#add the treatment in the right format (4-level factor)
+SLA_data$Treatment<-NA
+for (i in 1:nrow(SLA_data)) {
+  if (SLA_data$Nitrogen[i] == 0 & SLA_data$Fungicide[i] == 0) {
+    SLA_data$Treatment[i]<- "C"
   }
-  if (tg$Nitrogen[i] == 0 & tg$Fungicide[i] == 1)  {
-    tg$Treatment[i]<- "F"
+  if (SLA_data$Nitrogen[i] == 0 & SLA_data$Fungicide[i] == 1)  {
+    SLA_data$Treatment[i]<- "F"
   }
-  if (tg$Nitrogen[i] == 1 & tg$Fungicide[i] == 0)  {
-    tg$Treatment[i]<- "N"
+  if (SLA_data$Nitrogen[i] == 1 & SLA_data$Fungicide[i] == 0)  {
+    SLA_data$Treatment[i]<- "N"
   }
-   if (tg$Nitrogen[i] == 1 & tg$Fungicide[i] == 1)  {
-    tg$Treatment[i]<- "NF"
+   if (SLA_data$Nitrogen[i] == 1 & SLA_data$Fungicide[i] == 1)  {
+    SLA_data$Treatment[i]<- "NF"
   }
   
 }
 
-tg$Treatment<-as.factor(tg$Treatment)
-tg$Treatment<-factor(tg$Treatment, levels = c("C","N","F","NF"))
+SLA_data$Treatment<-as.factor(SLA_data$Treatment)
+SLA_data$Treatment<-factor(SLA_data$Treatment, levels = c("C","N","F","NF"))
 
-tgc <- Rmisc::summarySE(tg, measurevar="Delta_SLA", groupvars=c("Treatment","Year")) ##sd,seֵ
+SLA_datac <- Rmisc::summarySE(SLA_data, measurevar="Delta_SLA", groupvars=c("Treatment","Year")) ##sd,seֵ
+
+#removing useless treatments, remove the following lines if you also want to look at fungicide and combined effect
+SLA_datac[SLA_datac$Treatment=="F",]<-NA
+SLA_datac<-na.omit(SLA_datac)
+SLA_datac[SLA_datac$Treatment=="NF",]<-NA
+SLA_datac<-na.omit(SLA_datac)
+
 pd <- position_dodge(0.3)
-a1 <- ggplot(tgc, aes(x=Year, y=Delta_SLA, colour=Treatment, group=Treatment)) + 
+a1 <- ggplot(SLA_datac, aes(x=Year, y=Delta_SLA, colour=Treatment, group=Treatment)) + 
   geom_errorbar(aes(ymin=Delta_SLA-se, ymax=Delta_SLA+se), colour="black", width=.1, position=pd)+
   geom_point(position=pd, size=3)+
   theme_bw()+
+  scale_colour_manual(values = c("#F8766D", "#7CAE00"))+
   theme(panel.grid = element_blank(),
         panel.background = element_blank(),
         panel.border = element_blank(),
@@ -1861,4 +1873,3 @@ a1 <- ggplot(tgc, aes(x=Year, y=Delta_SLA, colour=Treatment, group=Treatment)) +
 a1
 
 ```
-
