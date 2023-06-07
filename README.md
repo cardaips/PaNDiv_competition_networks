@@ -3,6 +3,10 @@ Data from PaNDiv experiment and code for the analysis of "Resource economics tra
 
 ## What can you find in this project?
 
+## PaNDiv_competition_network Rproject environment
+
+This R project should first be opened in order to run code or to do any work in this repository.
+
 ### code folder
 
 In the code folder, you will find the Rmarkdown that contains the full analysis, called "PaNDiv_competition_network_full_analysis.Rmd". You will also find its .html output which is identical to the "index.html" file used for webpage deployment.
