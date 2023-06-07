@@ -917,7 +917,8 @@ asympred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
   #facet_grid(~Season)+ #add to look at the two sampling periods separately
   geom_line(size=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
-  ylim(c(1.3,2.0))+ #might need to change it if scaled  ylab("Asymmetry")+
+  ylim(c(1.3,2.0))+ #might need to change it if scaled  
+  ylab("Asymmetry")+
   xlab(" ")+
   theme_bw()
 
@@ -1815,7 +1816,7 @@ ggarrange(effect, response)
 
 ## d. PaNDiv SLA shift with treatment {-}
 
-Lastly, we used PaNDiv cover and SLA data in order to check the plots shift in SLA with nitrogen treatment (monocultures were excluded). A negative Delta_SLA means that communities are shifting toward lower values of SLA, and that they become more slow growing.
+Lastly, we used PaNDiv SLA data in order to check the plots shift in SLA with nitrogen treatment (monocultures were excluded). A negative Delta_SLA means that communities are shifting toward lower values of SLA, and that they become more slow growing.
  
 - insight on the nitrogen effect and SLA shift in PaNDiv plots 
 
@@ -1868,7 +1869,7 @@ a1 <- ggplot(SLA_datac, aes(x=Year, y=Delta_SLA, colour=Treatment, group=Treatme
         axis.line = element_line(colour = "black") )
 ```
 
-```{r, plot supplementary figure 8, fig.align ='center', fig.width=13, fig.height=8, echo = FALSE}
+```{r, plot supplementary figure 8, fig.align ='center', fig.width=8, fig.height=8, echo = FALSE}
 
 a1
 
