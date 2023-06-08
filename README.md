@@ -3,7 +3,7 @@ Data from PaNDiv experiment and code for the analysis of "Resource economics tra
 
 ## What can you find in this project?
 
-### PaNDiv_competition_network Rproject environment
+### PaNDiv_competition_network.Rproject file
 
 This R project should first be opened in order to run code or to do any work in this repository.
 
