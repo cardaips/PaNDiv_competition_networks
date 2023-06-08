@@ -632,6 +632,7 @@ contau<-ggplot(plot_alpha_august_control, aes(x = X1, y = X2)) +
   theme_bw() + theme(axis.text.x=element_text(size=9, angle=0, vjust=0.3, color = colorsp),
                      axis.text.y=element_text(size=9, color = rev(colorsp)),
                      axis.title.y = element_blank(),
+                     axis.title.x = element_blank(),
                      plot.title=element_text(size=11))+
   scale_y_discrete(limits = rev)+scale_x_discrete(position = "top") 
 
