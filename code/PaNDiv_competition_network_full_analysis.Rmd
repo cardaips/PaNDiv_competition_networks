@@ -492,45 +492,45 @@ We then plotted the interaction matrices in order to obtain Fig. 1 (here we pres
 ```{r, plot interaction matrix}
 
 # simple re ordering of the species
-alpha_june_control<-alpha_june_control[c("Am","Sp","Cj","Dc","Pm","Pg","Ao","Be","Fr","Hp",
-                "To","Cb","Ga","Ra","Dg","Hl","Lp","Pt"),]
-alpha_june_control<-alpha_june_control[,c("Am","Sp","Cj","Dc","Pm","Pg","Ao","Be","Fr","Hp",
-                               "To","Cb","Ga","Ra","Dg","Hl","Lp","Pt")]
+alpha_june_control<-alpha_june_control[c("Am","Dc","Fr","Pm","Be","Hp","Sp","Pg","Cj","Ao",
+                "To","Cb","Lp","Ra","Dg","Hl","Ga","Pt"),]
+alpha_june_control<-alpha_june_control[,c("Am","Dc","Fr","Pm","Be","Hp","Sp","Pg","Cj","Ao",
+                "To","Cb","Lp","Ra","Dg","Hl","Ga","Pt")]
 
-alpha_june_nitrogen<-alpha_june_nitrogen[c("Am","Sp","Cj","Dc","Pm","Pg","Ao","Be","Fr","Hp",
-                               "To","Cb","Ga","Ra","Dg","Hl","Lp","Pt"),]
-alpha_june_nitrogen<-alpha_june_nitrogen[,c("Am","Sp","Cj","Dc","Pm","Pg","Ao","Be","Fr","Hp",
-                                "To","Cb","Ga","Ra","Dg","Hl","Lp","Pt")]
+alpha_june_nitrogen<-alpha_june_nitrogen[c("Am","Dc","Fr","Pm","Be","Hp","Sp","Pg","Cj","Ao",
+                "To","Cb","Lp","Ra","Dg","Hl","Ga","Pt"),]
+alpha_june_nitrogen<-alpha_june_nitrogen[,c("Am","Dc","Fr","Pm","Be","Hp","Sp","Pg","Cj","Ao",
+                "To","Cb","Lp","Ra","Dg","Hl","Ga","Pt")]
 
-alpha_june_fungicide<-alpha_june_fungicide[c("Am","Sp","Cj","Dc","Pm","Pg","Ao","Be","Fr","Hp",
-                               "To","Cb","Ga","Ra","Dg","Hl","Lp","Pt"),]
-alpha_june_fungicide<-alpha_june_fungicide[,c("Am","Sp","Cj","Dc","Pm","Pg","Ao","Be","Fr","Hp",
-                                "To","Cb","Ga","Ra","Dg","Hl","Lp","Pt")]
+alpha_june_fungicide<-alpha_june_fungicide[c("Am","Dc","Fr","Pm","Be","Hp","Sp","Pg","Cj","Ao",
+                "To","Cb","Lp","Ra","Dg","Hl","Ga","Pt"),]
+alpha_june_fungicide<-alpha_june_fungicide[,c("Am","Dc","Fr","Pm","Be","Hp","Sp","Pg","Cj","Ao",
+                "To","Cb","Lp","Ra","Dg","Hl","Ga","Pt")]
 
-alpha_june_combined<-alpha_june_combined[c("Am","Sp","Cj","Dc","Pm","Pg","Ao","Be","Fr","Hp",
-                               "To","Cb","Ga","Ra","Dg","Hl","Lp","Pt"),]
-alpha_june_combined<-alpha_june_combined[,c("Am","Sp","Cj","Dc","Pm","Pg","Ao","Be","Fr","Hp",
-                                "To","Cb","Ga","Ra","Dg","Hl","Lp","Pt")]
+alpha_june_combined<-alpha_june_combined[c("Am","Dc","Fr","Pm","Be","Hp","Sp","Pg","Cj","Ao",
+                "To","Cb","Lp","Ra","Dg","Hl","Ga","Pt"),]
+alpha_june_combined<-alpha_june_combined[,c("Am","Dc","Fr","Pm","Be","Hp","Sp","Pg","Cj","Ao",
+                "To","Cb","Lp","Ra","Dg","Hl","Ga","Pt")]
 
-alpha_august_control<-alpha_august_control[c("Am","Sp","Cj","Dc","Pm","Pg","Ao","Be","Fr","Hp",
-                               "To","Cb","Ga","Ra","Dg","Hl","Lp","Pt"),]
-alpha_august_control<-alpha_august_control[,c("Am","Sp","Cj","Dc","Pm","Pg","Ao","Be","Fr","Hp",
-                                "To","Cb","Ga","Ra","Dg","Hl","Lp","Pt")]
+alpha_august_control<-alpha_august_control[c("Am","Dc","Fr","Pm","Be","Hp","Sp","Pg","Cj","Ao",
+                "To","Cb","Lp","Ra","Dg","Hl","Ga","Pt"),]
+alpha_august_control<-alpha_august_control[,c("Am","Dc","Fr","Pm","Be","Hp","Sp","Pg","Cj","Ao",
+                "To","Cb","Lp","Ra","Dg","Hl","Ga","Pt")]
 
-alpha_august_nitrogen<-alpha_august_nitrogen[c("Am","Sp","Cj","Dc","Pm","Pg","Ao","Be","Fr","Hp",
-                                 "To","Cb","Ga","Ra","Dg","Hl","Lp","Pt"),]
-alpha_august_nitrogen<-alpha_august_nitrogen[,c("Am","Sp","Cj","Dc","Pm","Pg","Ao","Be","Fr","Hp",
-                                  "To","Cb","Ga","Ra","Dg","Hl","Lp","Pt")]
+alpha_august_nitrogen<-alpha_august_nitrogen[c("Am","Dc","Fr","Pm","Be","Hp","Sp","Pg","Cj","Ao",
+                "To","Cb","Lp","Ra","Dg","Hl","Ga","Pt"),]
+alpha_august_nitrogen<-alpha_august_nitrogen[,c("Am","Dc","Fr","Pm","Be","Hp","Sp","Pg","Cj","Ao",
+                "To","Cb","Lp","Ra","Dg","Hl","Ga","Pt")]
 
-alpha_august_fungicide<-alpha_august_fungicide[c("Am","Sp","Cj","Dc","Pm","Pg","Ao","Be","Fr","Hp",
-                                   "To","Cb","Ga","Ra","Dg","Hl","Lp","Pt"),]
-alpha_august_fungicide<-alpha_august_fungicide[,c("Am","Sp","Cj","Dc","Pm","Pg","Ao","Be","Fr","Hp",
-                                    "To","Cb","Ga","Ra","Dg","Hl","Lp","Pt")]
+alpha_august_fungicide<-alpha_august_fungicide[c("Am","Dc","Fr","Pm","Be","Hp","Sp","Pg","Cj","Ao",
+                "To","Cb","Lp","Ra","Dg","Hl","Ga","Pt"),]
+alpha_august_fungicide<-alpha_august_fungicide[,c("Am","Dc","Fr","Pm","Be","Hp","Sp","Pg","Cj","Ao",
+                "To","Cb","Lp","Ra","Dg","Hl","Ga","Pt")]
 
-alpha_august_combined<-alpha_august_combined[c("Am","Sp","Cj","Dc","Pm","Pg","Ao","Be","Fr","Hp",
-                                 "To","Cb","Ga","Ra","Dg","Hl","Lp","Pt"),]
-alpha_august_combined<-alpha_august_combined[,c("Am","Sp","Cj","Dc","Pm","Pg","Ao","Be","Fr","Hp",
-                                  "To","Cb","Ga","Ra","Dg","Hl","Lp","Pt")]
+alpha_august_combined<-alpha_august_combined[c("Am","Dc","Fr","Pm","Be","Hp","Sp","Pg","Cj","Ao",
+                "To","Cb","Lp","Ra","Dg","Hl","Ga","Pt"),]
+alpha_august_combined<-alpha_august_combined[,c("Am","Dc","Fr","Pm","Be","Hp","Sp","Pg","Cj","Ao",
+                "To","Cb","Lp","Ra","Dg","Hl","Ga","Pt")]
 
 
 #define the color of each species to differentiate fast from slow growing species
