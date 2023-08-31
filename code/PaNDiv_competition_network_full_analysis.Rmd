@@ -1851,17 +1851,17 @@ SLA_data$Treatment<-factor(SLA_data$Treatment, levels = c("C","N","F","NF"))
 SLA_datac <- Rmisc::summarySE(SLA_data, measurevar="Delta_SLA", groupvars=c("Treatment","Year")) ##sd,seֵ
 
 #removing useless treatments, remove the following lines if you also want to look at fungicide and combined effect
-SLA_datac[SLA_datac$Treatment=="F",]<-NA
-SLA_datac<-na.omit(SLA_datac)
-SLA_datac[SLA_datac$Treatment=="NF",]<-NA
-SLA_datac<-na.omit(SLA_datac)
+#SLA_datac[SLA_datac$Treatment=="F",]<-NA
+#SLA_datac<-na.omit(SLA_datac)
+#SLA_datac[SLA_datac$Treatment=="NF",]<-NA
+#SLA_datac<-na.omit(SLA_datac)
 
 pd <- position_dodge(0.3)
 a1 <- ggplot(SLA_datac, aes(x=Year, y=Delta_SLA, colour=Treatment, group=Treatment)) + 
   geom_errorbar(aes(ymin=Delta_SLA-se, ymax=Delta_SLA+se), colour="black", width=.1, position=pd)+
   geom_point(position=pd, size=3)+
   theme_bw()+
-  scale_colour_manual(values = c("#F8766D", "#7CAE00"))+
+  #scale_colour_manual(values = c("#F8766D", "#7CAE00"))+
   theme(panel.grid = element_blank(),
         panel.background = element_blank(),
         panel.border = element_blank(),
