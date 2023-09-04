@@ -28,7 +28,7 @@ The "SLA_PaNDiv_2016-2019.txt" contains species level information about the Spec
 
 The "SLA shift.xlsx" contains information about the measure of the shift in SLA (Delta_SLA) in PaNDiv communities sampled in June between 2016 and 2022. 
 
-The two "perco.txt" files are percentage cover of the experimental field from June and August 2020 used in order to obtain the Supplementary figure 6. This file is also associated with the "plot_all.txt" file which contains information on PaNDiv experiment plots (name and treatment).
+The two "perco.txt" files are percentage cover of the experimental field from June and August 2020 used in order to obtain the Supplementary figure 7. This file is also associated with the "plot_all.txt" file which contains information on PaNDiv experiment plots (name and treatment).
 
 ### results folder
 
