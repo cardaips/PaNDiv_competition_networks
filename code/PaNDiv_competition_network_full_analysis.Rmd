@@ -1171,7 +1171,7 @@ g1
 
 ## a. Plotting networks and modules {-}
 
-In order to visualize the impact of fungicide on modularity of slow and fast growing species and plot Supplementary figure 1, we represented networks as igraph objects and showed how the `cluster_optimize()` function creates groups of species that interact strongly together, maximizing the modularity. We also added the M, modularity value for each network.
+In order to visualize the impact of fungicide on modularity of slow and fast growing species and plot Supplementary figure 2, we represented networks as igraph objects and showed how the `cluster_optimize()` function creates groups of species that interact strongly together, maximizing the modularity. We also added the M, modularity value for each network.
 
 - Slow growing species modules, fungicide effect
 ```{r, slow growing network modules computing}
@@ -1244,7 +1244,7 @@ modu2<-modularity(gfun,membership(clufun), weights = abs(E(gfun)$weight))
 
 ```
 
-```{r, supplementary fig 1 slow growing network plot, fig.width = 8, fig.height=12, echo=FALSE}
+```{r, supplementary fig 2 slow growing network plot, fig.width = 8, fig.height=12, echo=FALSE}
 
 par(mfrow=c(2,1))
 
@@ -1323,7 +1323,7 @@ modu4<-modularity(gfun,membership(clufun), weights = abs(E(gfun)$weight))
 
 ```
 
-```{r, supplementary fig 1 fast growing network plot, fig.width = 8, fig.height=12, echo=FALSE}
+```{r, supplementary fig 2 fast growing network plot, fig.width = 8, fig.height=12, echo=FALSE}
 
 par(mfrow=c(2,1))
 
@@ -1540,9 +1540,9 @@ load(file ="results/multimembership_results_richness_5-7-11-15-18_species.Rdata"
 
 ```
 <br>
-From the results of these multimembership model, we can plot the Supplementary figure 4, which present the impact of treatment and SLA on mixed communities of different size across June and August 2020.
+From the results of these multimembership model, we can plot the Supplementary figure 5, which present the impact of treatment and SLA on mixed communities of different size across June and August 2020.
 <br>
-```{r, plot of supp fig. 4, fig.width = 14, fig.height = 16, fig.align ='center', echo=FALSE}
+```{r, plot of supp fig. 5, fig.width = 14, fig.height = 16, fig.align ='center', echo=FALSE}
 
 ggarrange(diagrichpred, 
           asymrichpred, 
@@ -1554,9 +1554,9 @@ ggarrange(diagrichpred,
 
 ```
 <br>
-And the Supplementary figure 5, which present the impact of treatment and SLA variance on mixed communities of different size across June and August 2020.
+And the Supplementary figure 6, which present the impact of treatment and SLA variance on mixed communities of different size across June and August 2020.
 <br>
-```{r, plot of supp fig. 5, fig.width = 14, fig.height = 16, fig.align ='center', echo=FALSE}
+```{r, plot of supp fig. 6, fig.width = 14, fig.height = 16, fig.align ='center', echo=FALSE}
 
 ggarrange(diagrichvpred, 
           asymrichvpred, 
@@ -1740,7 +1740,7 @@ summary(model)
 
 ```
 We can then plot Supplementary figure 6,
-```{r,plot supplementary figure 6, fig.align ='center', fig.height=10, fig.width=10, echo = FALSE}
+```{r,plot supplementary figure 7, fig.align ='center', fig.height=10, fig.width=10, echo = FALSE}
 
 plot(x$diff~x$bmatrix, xlab= "Average competitive effect", ylab = "Change in %cover with Fungicide")
 text(x$diff~x$bmatrix,labels=row.names(x),pos=4)
@@ -1750,7 +1750,7 @@ abline(model)
 
 - insight on the treatment effect at the species level
 
-Secondly, we wanted to test whether treatment impacted competition coefficients at the species level. For this, we plotted Supplementary figure 7, the change in competitive effect (response is also presented here) with treatment for every species. The black line represents the values that would be obtained if there was no impact of the treatments.The dotted colored lines represent the obtained values by treatment (the difference was not significant).
+Secondly, we wanted to test whether treatment impacted competition coefficients at the species level. For this, we plotted Supplementary figure 8, the change in competitive effect (response is also presented here) with treatment for every species. The black line represents the values that would be obtained if there was no impact of the treatments.The dotted colored lines represent the obtained values by treatment (the difference was not significant).
 
 ```{r, species effect and response versus treatment}
 
@@ -1809,11 +1809,58 @@ response<-ggplot(data=amatrixall,aes(x=amatrix,y=amatrixn))+
   theme(plot.background=element_blank())
 ```
 
-```{r, plot supplementary figure 7, fig.align ='center', fig.width=13, fig.height=8, echo = FALSE}
+```{r, plot supplementary figure 8, fig.align ='center', fig.width=13, fig.height=8, echo = FALSE}
 
 ggarrange(effect, response)
 
 ```
+
+- comparison to the pairwise interactions level, effect of nitrogen vs. fungicide
+
+Thirdly, we wanted to investigate whether the pairwise competitive coefficients change similarly across nitrogen and fungicide. For this, we calculated the absolute differences between our interaction coefficients in June control vs. nitrogen, and June control vs. fungicide. The 1.1 line represent what we would have expected if changes were correlated. We highlighted 4 pairwise interaction to illustrate our result in supplementary figure 9:
+
+```{r, plot supp figure 9}
+#absolute value between nitrogen and control in June
+delta_contni_matrix<-abs(alpha_june_control-alpha_june_nitrogen)
+plot_alpha_delta_contni<-melt.array(delta_contni_matrix)
+
+#absolute value between fungicide and control in June
+delta_contfun_matrix<-abs(alpha_june_control-alpha_june_fungicide)
+plot_alpha_delta_contfun<-melt.array(delta_contfun_matrix)
+
+#gathering the two in one data.frame
+plot_alpha_delta_contnifun<-plot_alpha_delta_contni
+plot_alpha_delta_contnifun$value2<-plot_alpha_delta_contfun$value
+colnames(plot_alpha_delta_contnifun)<-c("sp1","sp2","control.vs.nitrogen","control.vs.fungicide")
+
+#selecting 4 pairwise interaction to illustrate the result
+selection<-subset(plot_alpha_delta_contnifun, plot_alpha_delta_contnifun$sp1=="Am"| plot_alpha_delta_contnifun$sp2=="Am")
+selection<-selection[selection$sp2=="Hl"|selection$sp2=="Ga"|selection$sp2 == "Ao" | selection$sp1 == "Ga",]
+rownames(selection)<-NULL
+
+figs9a<-ggplot(plot_alpha_delta_contnifun, aes(x=control.vs.nitrogen,y=control.vs.fungicide))+
+  geom_point(alpha=0.2, shape=16)+
+  geom_point(data=selection, aes(x=control.vs.nitrogen,y=control.vs.fungicide),
+             color="red", shape=16, size=2)+
+  annotate("text", x=selection$control.vs.nitrogen[1], y=selection$control.vs.fungicide[1]+0.15,
+           label=c("Ga_Am"), color="red")+
+  annotate("text", x=selection$control.vs.nitrogen[2], y=selection$control.vs.fungicide[2]+0.15,
+           label=c("Am_Ao"), color="red")+
+  annotate("text", x=selection$control.vs.nitrogen[3], y=selection$control.vs.fungicide[3]+0.15,
+           label=c("Am_Hl"), color="red")+
+  annotate("text", x=selection$control.vs.nitrogen[4], y=selection$control.vs.fungicide[4]+0.15,
+           label=c("Am_Ga"), color="red")+
+  geom_abline(intercept = 0, slope = 1, color = "grey")+
+  theme_bw()
+
+```
+
+```{r, plot supplementary figure 9, fig.align ='center', fig.width=7, fig.height=6, echo = FALSE}
+
+figs9a
+
+```
+
 
 ## d. PaNDiv SLA shift with treatment {-}
 
@@ -1870,7 +1917,7 @@ a1 <- ggplot(SLA_datac, aes(x=Year, y=Delta_SLA, colour=Treatment, group=Treatme
         axis.line = element_line(colour = "black") )
 ```
 
-```{r, plot supplementary figure 8, fig.align ='center', fig.width=8, fig.height=8, echo = FALSE}
+```{r, plot supplementary figure 10, fig.align ='center', fig.width=8, fig.height=8, echo = FALSE}
 
 a1
 
