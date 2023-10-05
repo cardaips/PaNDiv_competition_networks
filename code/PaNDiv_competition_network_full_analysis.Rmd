@@ -40,7 +40,7 @@ pre {
 }
 ```
 
-Here will be presented the data analysis attached with "Resource economics traits predict competition network structure and its response to resources and enemies." 
+Here will be presented the data analysis attached with "Fast-slow traits predict competition network structure and its response to resources and enemies."
 <br>
 <br>
 In order to run this file, the attached R script "functions_competition_network.R" must be present in the "code" subfolder of the working directory, and all data must be present in a subfolder called "data". An R environment "all_competition_matrices.Rdata" is available in the "results" subfolder, for easy loading, but each matrix is also individually available if needed.
@@ -1074,7 +1074,7 @@ ggarrange(diagpred,diagvpred,
 
 Then, with the model outputs we can also plot the effects sizes (Fig. 3)
 
-```{r, plot of fig. 3, fig.width = 14, fig.height = 8, fig.align ='center' }
+```{r, plot of fig. 3, fig.width = 20, fig.height = 8, fig.align ='center' }
 #scaling all variables to compare effect sizes
 comp$Modularity<-scale(comp$Modularity, center = T)
 comp$Diagstrength<-scale(comp$Diagstrength, center = T)
@@ -1160,7 +1160,15 @@ g1<-modelplot(models,
   scale_alpha_manual(values = c(1,0.25))+
   scale_shape_manual(values = c(4,19))+
   xlim(c(-1,1))+
-  guides(color = "none")
+  guides(color = "none")+ 
+  theme(text=element_text(size=20), 
+        axis.text.y=element_text(size=15),
+        axis.text.x=element_text(size=8),
+        axis.title=element_text(size=18), 
+        plot.title=element_text(size=20), 
+        #legend.text=element_text(size=20), 
+        #legend.title=element_text(size=20)
+        ) 
 
 g1
 
