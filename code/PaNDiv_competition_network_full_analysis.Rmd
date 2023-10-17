@@ -1074,7 +1074,7 @@ ggarrange(diagpred,diagvpred,
 
 Then, with the model outputs we can also plot the effects sizes (Fig. 3)
 
-```{r, plot of fig. 3, fig.width = 20, fig.height = 8, fig.align ='center' }
+```{r, plot of fig. 3, fig.width = 17, fig.height = 11, fig.align ='center' }
 #scaling all variables to compare effect sizes
 comp$Modularity<-scale(comp$Modularity, center = T)
 comp$Diagstrength<-scale(comp$Diagstrength, center = T)
@@ -1147,7 +1147,8 @@ cbp2 <- c( "salmon", "salmon2", "salmon3",
 # saving plot in a g1 ggplot
 g1<-modelplot(models, 
               coef_omit = "Interc", 
-              coef_map = cm)+
+              coef_map = cm,
+              size=1)+
   aes(alpha = ifelse(estimate > 0.1 | estimate <(-0.1), 
                      "Strong effect ( | x | > 0.1)", 
                      "Weak effect ( | x | < 0.1)"),
