@@ -1,5 +1,5 @@
 # PaNDiv_competition_networks
-Data from PaNDiv experiment and code for the analysis of "Resource economics traits predict competition network structure and its response to resources and enemies"
+Data from PaNDiv experiment and code for the analysis of "Fast-slow traits predict competition network structure and its response to resources and enemies."
 
 ## What can you find in this project?
 
