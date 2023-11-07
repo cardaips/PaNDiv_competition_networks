@@ -631,8 +631,6 @@ contau<-ggplot(plot_alpha_august_control, aes(x = X1, y = X2)) +
   labs(x="species", y="species", title="August control") +
   theme_bw() + theme(axis.text.x=element_text(size=9, angle=0, vjust=0.3, color = colorsp),
                      axis.text.y=element_text(size=9, color = rev(colorsp)),
-                     axis.title.y = element_blank(),
-                     axis.title.x = element_blank(),
                      plot.title=element_text(size=11))+
   scale_y_discrete(limits = rev)+scale_x_discrete(position = "top") 
 
@@ -646,7 +644,6 @@ niau<-ggplot(plot_alpha_august_nitrogen, aes(x = X1, y = X2)) +
   theme_bw() + theme(axis.text.x=element_text(size=9, angle=0, vjust=0.3, color = colorsp),
                      axis.text.y=element_text(size=9, color = rev(colorsp)),
                      axis.title.y = element_blank(),
-                     axis.title.x = element_blank(),
                      plot.title=element_text(size=11))+
   scale_y_discrete(limits = rev)+scale_x_discrete(position = "top") 
 
@@ -659,7 +656,6 @@ funau<-ggplot(plot_alpha_august_fungicide, aes(x = X1, y = X2)) +
   labs(x="species", y="species", title="August fungicide") +
   theme_bw() + theme(axis.text.x=element_text(size=9, angle=0, vjust=0.3, color = colorsp),
                      axis.text.y=element_text(size=9, color = rev(colorsp)),
-                     axis.title.y = element_blank(),
                      axis.title.x = element_blank(),
                      plot.title=element_text(size=11))+
   scale_y_discrete(limits = rev)+scale_x_discrete(position = "top") 
@@ -680,9 +676,10 @@ combau<-ggplot(plot_alpha_august_combined, aes(x = X1, y = X2)) +
 
 ```
 
-```{r, figure 1 interaction matrices, fig.width = 8, fig.height = 14, fig.align ='center', echo = FALSE}
+```{r, figure 1 interaction matrices, fig.width = 8, fig.height = 8, fig.align ='center', echo = FALSE}
 
-ggarrange(contju, niju, funju, combju, contau,niau, funau, combau, common.legend = T, ncol = 2, nrow =4)
+ggarrange(contju, niju, funju, combju, common.legend = T, ncol = 2, nrow =2)
+ggarrange(contau, niau, funau, combau, common.legend = T, ncol = 2, nrow =2)
 
 ```
 
@@ -850,7 +847,7 @@ comp$Species<-Species
 
 Running the models and their prediction **takes about 45 min**, if you are just interested in the output, you can load the image file below.
 
-This code presents the average effect across June and August 2020, but with a few modifications (as indicated in the code below), you can look at the results on the two sampling periods separately and obtain the Supplementary figures 2 and 3. 
+This code presents the average effect across June and August 2020, but you can also look at the results on the two sampling periods separately and obtain the Supplementary figures 4 and 5. 
 
 - Diagonal dominance (D)
 ``` {r,multimembership model diagonal dominance, eval = FALSE}
@@ -868,30 +865,55 @@ opt <- optimizeLmer(devfun)
 # run the optimisation and save the model into a variable called m1, m2,... to m5 -> important !
 m2 <- mkMerMod(environment(devfun), opt, lmod$reTrms, fr = lmod$fr)
 
-datapred<-slapred(m2,comp) # takes two-three minutes to run, personal function defined in "function_competition_network.R"
+season_datapred<-slapred(m2,comp) # takes two-three minutes to run, personal function defined in "function_competition_network.R"
 #average across seasons for more clarity, remove to look at the two sampling periods separately
-datapred<-aggregate(cbind(fit,lwr,upr)~SLA+Treatment,FUN=mean,data= datapred)
-datavpred<-slavpred(m2,comp) # takes two-three minutes to run
+datapred<-aggregate(cbind(fit,lwr,upr)~SLA+Treatment,FUN=mean,data= season_datapred)
+season_datavpred<-slavpred(m2,comp) # takes two-three minutes to run
 #average across seasons for more clarity, remove to look at the two sampling periods separately
-datavpred<-aggregate(cbind(fit,lwr,upr)~SLAv+Treatment,FUN=mean,data= datavpred)
+datavpred<-aggregate(cbind(fit,lwr,upr)~SLAv+Treatment,FUN=mean,data= season_datavpred)
 
-diagpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
-  #facet_grid(~Season)+ #add to look at the two sampling periods separately
+season_diagpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=season_datapred)+
+  facet_grid(~Season)+ #look at the two sampling periods separately
   geom_line(size=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylab("Diagonal dominance")+
-  ylim(c(-9,-5))+ #might need to change it if scaled
+  ylim(c(-9,-4.5))+ #might need to change it if scaled
   xlab(" ")+
-  theme_bw()
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
 
-diagvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
-  #facet_grid(~Season)+ #add to look at the two sampling periods separately
+diagpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
   geom_line(size=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
-  ylim(c(-9,-5))+ #might need to change it if scaled
+  ylab("Diagonal dominance")+
+  ylim(c(-9,-4.5))+ #might need to change it if scaled
   xlab(" ")+
-  ylab("")+
-  theme_bw()
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
+
+season_diagvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=season_datavpred)+
+  facet_grid(~Season)+ #look at the two sampling periods separately
+  geom_line(size=0.8)+
+  geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
+  ylim(c(-9,-4.5))+ #might need to change it if scaled
+  xlab(" ")+
+  ylab("Diagonal dominance")+
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
+
+diagvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
+  geom_line(size=0.8)+
+  geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
+  ylim(c(-9,-4.5))+ #might need to change it if scaled
+  xlab(" ")+
+  ylab(" ")+
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
+
 
 ```
 
@@ -905,34 +927,56 @@ devfun <- do.call(mkLmerDevfun, lmod)
 opt <- optimizeLmer(devfun)
 m3 <- mkMerMod(environment(devfun), opt, lmod$reTrms, fr = lmod$fr)
 
-datapred<-slapred(m3,comp)
+season_datapred<-slapred(m3,comp)
 #average across seasons for more clarity, remove to look at the two sampling periods separately
-datapred<-aggregate(cbind(fit,lwr,upr)~SLA+Treatment,FUN=mean,data= datapred)
-datavpred<-slavpred(m3,comp) #takes two-three minutes each to run
+datapred<-aggregate(cbind(fit,lwr,upr)~SLA+Treatment,FUN=mean,data= season_datapred)
+season_datavpred<-slavpred(m3,comp) #takes two-three minutes each to run
 #average across seasons for more clarity, remove to look at the two sampling periods separately
-datavpred<-aggregate(cbind(fit,lwr,upr)~SLAv+Treatment,FUN=mean,data= datavpred)
+datavpred<-aggregate(cbind(fit,lwr,upr)~SLAv+Treatment,FUN=mean,data= season_datavpred)
 
 datapredb<-subset(datapred, datapred$Treatment=="Control"|datapred$Treatment=="Nitrogen"|datapred$Treatment=="Fungicide")
 
-asympred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
-  #facet_grid(~Season)+ #add to look at the two sampling periods separately
+season_asympred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=season_datapred)+
+  facet_grid(~Season)+ #add to look at the two sampling periods separately
   geom_line(size=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylim(c(1.3,2.0))+ #might need to change it if scaled  
   ylab("Asymmetry")+
   xlab(" ")+
-  theme_bw()
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
 
+asympred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
+  geom_line(size=0.8)+
+  geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
+  ylim(c(1.3,2.0))+ #might need to change it if scaled  
+  ylab("Asymmetry")+
+  xlab(" ")+
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
 
-asymvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
-  #facet_grid(~Season)+ #add to look at the two sampling periods separately
+season_asymvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=season_datavpred)+
+  facet_grid(~Season)+ #add to look at the two sampling periods separately
   geom_line(size=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylim(c(1.3,2.0))+ #might need to change it if scaled
-  ylab("")+
+  ylab("Asymmetry")+
   xlab(" ")+
-  theme_bw()
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
 
+asymvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
+  geom_line(size=0.8)+
+  geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
+  ylim(c(1.3,2.0))+ #might need to change it if scaled
+  ylab(" ")+
+  xlab(" ")+
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
 
 ```
 
@@ -946,30 +990,54 @@ devfun <- do.call(mkLmerDevfun, lmod)
 opt <- optimizeLmer(devfun)
 m4 <- mkMerMod(environment(devfun), opt, lmod$reTrms, fr = lmod$fr)
 
-datapred<-slapred(m4,comp)
+season_datapred<-slapred(m4,comp)
 #average across seasons for more clarity, remove to look at the two sampling periods separately
-datapred<-aggregate(cbind(fit,lwr,upr)~SLA+Treatment,FUN=mean,data= datapred)
-datavpred<-slavpred(m4,comp) #takes two-three minutes each to run
+datapred<-aggregate(cbind(fit,lwr,upr)~SLA+Treatment,FUN=mean,data= season_datapred)
+season_datavpred<-slavpred(m4,comp) #takes two-three minutes each to run
 #average across seasons for more clarity, remove to look at the two sampling periods separately
-datavpred<-aggregate(cbind(fit,lwr,upr)~SLAv+Treatment,FUN=mean,data= datavpred)
+datavpred<-aggregate(cbind(fit,lwr,upr)~SLAv+Treatment,FUN=mean,data= season_datavpred)
 
-skewpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
-  #facet_grid(~Season)+ #add to look at the two sampling periods separately
+season_skewpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=season_datapred)+
+  facet_grid(~Season)+ #add to look at the two sampling periods separately
   geom_line(size=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylim(c(-1.5,0.5))+ #might need to change it if scaled
   ylab("Skewness")+
   xlab(" ")+
-  theme_bw()
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
 
-skewvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
-  #facet_grid(~Season)+ #add to look at the two sampling periods separately
+skewpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
+  geom_line(size=0.8)+
+  geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
+  ylim(c(-1.5,0.5))+ #might need to change it if scaled
+  ylab("Skewness")+
+  xlab(" ")+
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
+
+season_skewvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=season_datavpred)+
+  facet_grid(~Season)+ #add to look at the two sampling periods separately
   geom_line(size=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+  
-  ylim(c(-1.5,0.5))+ #might need to change it if scaled
+  ylim(c(-2,0.5))+ #might need to change it if scaled
   xlab(" ")+
-  ylab("")+
-  theme_bw()
+  ylab("Skewness")+
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
+
+skewvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
+  geom_line(size=0.8)+
+  geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+  
+  ylim(c(-2,0.5))+ #might need to change it if scaled
+  xlab(" ")+
+  ylab(" ")+
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
 
 ```
 
@@ -983,32 +1051,54 @@ devfun <- do.call(mkLmerDevfun, lmod)
 opt <- optimizeLmer(devfun)
 m5 <- mkMerMod(environment(devfun), opt, lmod$reTrms, fr = lmod$fr)
 
-datapred<-slapred(m5,comp)
+season_datapred<-slapred(m5,comp)
 #average across seasons for more clarity, remove to look at the two sampling periods separately
-datapred<-aggregate(cbind(fit,lwr,upr)~SLA+Treatment,FUN=mean,data= datapred)
-datavpred<-slavpred(m5,comp) #takes two-three minutes each to run
+datapred<-aggregate(cbind(fit,lwr,upr)~SLA+Treatment,FUN=mean,data= season_datapred)
+season_datavpred<-slavpred(m5,comp) #takes two-three minutes each to run
 #average across seasons for more clarity, remove to look at the two sampling periods separately
-datavpred<-aggregate(cbind(fit,lwr,upr)~SLAv+Treatment,FUN=mean,data= datavpred)
+datavpred<-aggregate(cbind(fit,lwr,upr)~SLAv+Treatment,FUN=mean,data= season_datavpred)
 
-datapredb<-subset(datapred, datapred$Treatment=="Control"|datapred$Treatment=="Nitrogen"|datapred$Treatment=="Fungicide")
-
-ginipred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
-  #facet_grid(~Season)+ #add to look at the two sampling periods separately
+season_ginipred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=season_datapred)+
+  facet_grid(~Season)+ #add to look at the two sampling periods separately
   ylim(c(0.4,0.65))+ #might need to change it if scaled
   geom_line(size=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylab("Evenness")+
   xlab(" ")+
-  theme_bw()
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
 
-ginivpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
-  #facet_grid(~Season)+ #add to look at the two sampling periods separately
+ginipred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
   ylim(c(0.4,0.65))+ #might need to change it if scaled
   geom_line(size=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
-  ylab("")+
+  ylab("Evenness")+
   xlab(" ")+
-  theme_bw()
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
+
+season_ginivpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=season_datavpred)+
+  facet_grid(~Season)+ #add to look at the two sampling periods separately
+  ylim(c(0.4,0.65))+ #might need to change it if scaled
+  geom_line(size=0.8)+
+  geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
+  ylab("Evenness")+
+  xlab(" ")+
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
+
+ginivpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
+  ylim(c(0.4,0.65))+ #might need to change it if scaled
+  geom_line(size=0.8)+
+  geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
+  ylab(" ")+
+  xlab(" ")+
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
 
 ```
 
@@ -1022,31 +1112,56 @@ devfun <- do.call(mkLmerDevfun, lmod)
 opt <- optimizeLmer(devfun)
 m1 <- mkMerMod(environment(devfun), opt, lmod$reTrms, fr = lmod$fr)
 
-datapred<-slapred(m1,comp)
+season_datapred<-slapred(m1,comp)
 #average across seasons for more clarity, remove to look at the two sampling periods separately
-datapred<-aggregate(cbind(fit,lwr,upr)~SLA+Treatment,FUN=mean,data= datapred)
-datavpred<-slavpred(m1,comp) #takes two-three minutes each to run
+datapred<-aggregate(cbind(fit,lwr,upr)~SLA+Treatment,FUN=mean,data=season_datapred)
+season_datavpred<-slavpred(m1,comp) #takes two-three minutes each to run
 #average across seasons for more clarity, remove to look at the two sampling periods separately
-datavpred<-aggregate(cbind(fit,lwr,upr)~SLAv+Treatment,FUN=mean,data= datavpred)
+datavpred<-aggregate(cbind(fit,lwr,upr)~SLAv+Treatment,FUN=mean,data= season_datavpred)
 
-modupred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
-  #facet_grid(~Season)+ #add to look at the two sampling periods separately
+season_modupred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=season_datapred)+
+  facet_grid(~Season)+ #add to look at the two sampling periods separately
   #ylim(c(-2,2))+
   geom_line(linewidth=0.8)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylab("Modularity")+
   ylim(c(0.05,0.2))+ #might need to change it if scaled
-  theme_bw()
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
 
-moduvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
-  #facet_grid(~Season)+ #add to look at the two sampling periods separately
+modupred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
+  #ylim(c(-2,2))+
+  geom_line(linewidth=0.8)+
+  geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
+  ylab("Modularity")+
+  ylim(c(0.05,0.2))+ #might need to change it if scaled
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
+
+season_moduvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=season_datavpred)+
+  facet_grid(~Season)+ #add to look at the two sampling periods separately
   geom_line(linewidth=0.8)+
   #ylim(c(-2,2))+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
-  ylab("")+
+  ylab("Modularity")+
   xlab("SLA variance")+
   ylim(c(0.05,0.2))+ #might need to change it if scaled
-  theme_bw()
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
+
+moduvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
+  geom_line(linewidth=0.8)+
+  #ylim(c(-2,2))+
+  geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
+  ylab(" ")+
+  xlab("SLA variance")+
+  ylim(c(0.05,0.2))+ #might need to change it if scaled
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())    
 
 #saving the models and predictions in an R environment
 save.image(file = "results/multimembership_results_5_species.Rdata")
@@ -1072,9 +1187,26 @@ ggarrange(diagpred,diagvpred,
           common.legend = T, label.x = " ", ncol=2,nrow=5)
 ```
 
+We can also plot the two seasons separately to obtain figs. S4 and S5:
+```{r, plot of supp fig. 4 and 5, fig.width = 8, fig.height = 14, fig.align ='center', echo = FALSE }
+ggarrange(season_diagpred,
+          season_asympred,
+          season_skewpred,
+          season_ginipred,
+          season_modupred,
+          common.legend = T, label.x = " ", ncol=1,nrow=5)
+ggarrange(season_diagvpred,
+          season_asymvpred,
+          season_skewvpred,
+          season_ginivpred,
+          season_moduvpred,
+          common.legend = T, label.x = " ", ncol=1,nrow=5)
+```
+
+
 Then, with the model outputs we can also plot the effects sizes (Fig. 3)
 
-```{r, plot of fig. 3, fig.width = 17, fig.height = 11, fig.align ='center' }
+```{r, plot of fig. 3, fig.width = 19, fig.height = 11, fig.align ='center' }
 #scaling all variables to compare effect sizes
 comp$Modularity<-scale(comp$Modularity, center = T)
 comp$Diagstrength<-scale(comp$Diagstrength, center = T)
@@ -1174,184 +1306,20 @@ g1<-modelplot(models,
 g1
 
 
-```
-
-# 3. Supplementary figures {-}
-
-## a. Plotting networks and modules {-}
-
-In order to visualize the impact of fungicide on modularity of slow and fast growing species and plot Supplementary figure 2, we represented networks as igraph objects and showed how the `cluster_optimize()` function creates groups of species that interact strongly together, maximizing the modularity. We also added the M, modularity value for each network.
-
-- Slow growing species modules, fungicide effect
-```{r, slow growing network modules computing}
-
-#Slow growing species
-netlist<-networkplot(as.data.frame(c(slowsp)), length(slowsp)) #personal function defined in "function_competition_networks.R"
-#it returns a list of igraph objects and a list of species cluster membership
-#adding treatments as names of the list
-names(netlist)<-rep(names(all),each = 2)
-#slow growing species color code
-colslow<-rep("turquoise4", lenght.out=length(slowsp))
-
-#Control network plot
-gcont<-netlist$`June C`
-#saves species cluster membership
-clucont<-netlist[[2]]
-#formats in a dataframe
-indclasscont<-data.frame(values=c(slowsp),ind=as.character(clucont$membership))
-#defines color of clusters
-colcont<-c("1"="antiquewhite2", "2"="seashell3", "3"="peachpuff3")
-#matches the colors with the membership
-V(gcont)$color <- colcont[indclasscont$ind[match(V(gcont)$name,indclasscont$values)]]
-#color code of interactions
-E(gcont)$color<-"mediumorchid4"
-E(gcont)[weight>=0]$color<-"sienna1"
-
-#reorders species for better graphical representation
-gcont1 <- igraph::permute(gcont,c(V(gcont)[2], 
-                                  V(gcont)[1],
-                                  V(gcont)[3],  
-                                  V(gcont)[7], 
-                                  V(gcont)[9],  
-                                  V(gcont)[6],
-                                  V(gcont)[4], 
-                                  V(gcont)[8],
-                                  V(gcont)[5], 
-                                  V(gcont)[10]))
-
-#saves modularity
-modu1<-modularity(gcont,membership(clucont), weights = abs(E(gcont)$weight))
-
-#Fungicide network plot
-gfun<-netlist$`June F`
-#saves species cluster membership
-clufun<-netlist[[6]]
-#formats in a dataframe
-indclassfun<-data.frame(values=c(slowsp),ind=as.character(clufun$membership))
-#defines color of clusters
-colfun<-c("1"="seashell3", "2"="antiquewhite2", "3"="peachpuff3")
-#matches the colors with the membership
-V(gfun)$color <- colfun[indclassfun$ind[match(V(gfun)$name,indclassfun$values)]]
-#color code of interactions
-E(gfun)$color<-"mediumorchid4"
-E(gfun)[weight>=0]$color<-"sienna1"
-
-#reorders species for better graphical representation
-gfun1 <- igraph::permute(gfun,c(V(gfun)[1], 
-                                  V(gfun)[9],
-                                  V(gfun)[3],  
-                                  V(gfun)[4], 
-                                  V(gfun)[5],  
-                                  V(gfun)[6],
-                                  V(gfun)[7], 
-                                  V(gfun)[8],
-                                  V(gfun)[2], 
-                                  V(gfun)[10]))
-
-#saves modularity
-modu2<-modularity(gfun,membership(clufun), weights = abs(E(gfun)$weight))
+modelist<- list(m2,m3,m4,m5,m1)
+names(modelist) <- c("Diagonal dominance", "Asymmetry", "Skewness", "Evenness", "Modularity")
+modelsummary(modelist, statistic = NULL,
+             estimate = "{estimate}{stars} ({p.value})",
+             fmt = fmt_statistic(estimate = 2, p.value = 3),
+             coef_rename = c("SLAv" = "SLA variance", "Nitrogen1" = "Nitrogen", "Fungicide1" = "Fungicide", "SeasonAugust"="Season"),
+             coef_omit = "(Intercept)",
+             stars = T)
 
 ```
 
-```{r, supplementary fig 2 slow growing network plot, fig.width = 8, fig.height=12, echo=FALSE}
+# 3. Other supplementary figures {-}
 
-par(mfrow=c(2,1))
-
-plot.igraph(gcont1,edge.width=abs(E(gcont)$weight),edge.arrow.size=0.1,edge.arrow.width=1.5,edge.curved=0.2,
-            edge.color=E(gcont1)$color, vertex.size=20,vertex.label.cex=1.5,vertex.label.color=colslow,
-            mark.groups=clucont,mark.col=colcont,layout=layout.circle, mark.border = "white")
-title(main="Slow species, control")
-text(-1,-1, paste("M=", round(modu1, digits=3), sep = ""), cex = 1.5)
-
-
-plot.igraph(gfun1,edge.width=abs(E(gfun)$weight),edge.arrow.size=0.1,edge.arrow.width=1.5,edge.curved=0.2,
-            edge.color=E(gfun1)$color, vertex.size=20,vertex.label.cex=1.5,vertex.label.color=colslow,
-            mark.groups=clufun,mark.col=colfun,layout=layout.circle, mark.border = "white")
-title(main="Slow species, fungicide")
-text(-1,-1, paste("M=", round(modu2, digits=3), sep = ""), cex = 1.5)
-
-```
-
-- Fast growing species modules, fungicide effect
-```{r, fast growing network modules computing}
-
-#Slow growing species
-netlist<-networkplot(as.data.frame(c(fastsp)), length(fastsp))#personal function defined in "function_competition_networks.R"
-#it returns a list of igraph objects and a list of species cluster membership
-#adding treatments as names of the list
-names(netlist)<-rep(names(all),each = 2)
-#fast growing species color code
-colfast<-rep("chartreuse4", lenght.out=length(fastsp))
-
-#Control network plot
-gcont<-netlist$`June C`
-#saves species cluster membership
-clucont<-netlist[[2]]
-#formats in a dataframe
-indclasscont<-data.frame(values=c(fastsp),ind=as.character(clucont$membership))
-#defines color of clusters
-colcont<-c("1"="honeydew3", "2"="khaki3", "3"="navajowhite3")
-#matches the colors with the membership
-V(gcont)$color <- colcont[indclasscont$ind[match(V(gcont)$name,indclasscont$values)]]
-#color code of interactions
-E(gcont)$color<-"mediumorchid4"
-E(gcont)[weight>=0]$color<-"sienna1"
-
-#no need for permutations here
-
-#saves modularity
-modu3<-modularity(gcont,membership(clucont), weights = abs(E(gcont)$weight))
-
-
-#Fungicide network plot
-gfun<-netlist$`June F`
-#saves species cluster membership
-clufun<-netlist[[6]]
-#formats in a dataframe
-indclassfun<-data.frame(values=c(fastsp),ind=as.character(clufun$membership))
-#defines color of clusters
-colfun<-c("1"="honeydew3", "2"="navajowhite3", "3"="khaki3")
-#matches the colors with the membership
-V(gfun)$color <- colfun[indclassfun$ind[match(V(gfun)$name,indclassfun$values)]]
-#color code of interactions
-E(gfun)$color<-"mediumorchid4"
-E(gfun)[weight>=0]$color<-"sienna1"
-
-#reorders species for better graphical representation
-gfun1 <- igraph::permute(gfun,c(V(gfun)[1], 
-                                  V(gfun)[2],
-                                  V(gfun)[3],  
-                                  V(gfun)[6], 
-                                  V(gfun)[5],  
-                                  V(gfun)[4],
-                                  V(gfun)[7], 
-                                  V(gfun)[8]))
-
-#saves modularity
-modu4<-modularity(gfun,membership(clufun), weights = abs(E(gfun)$weight))
-
-```
-
-```{r, supplementary fig 2 fast growing network plot, fig.width = 8, fig.height=12, echo=FALSE}
-
-par(mfrow=c(2,1))
-
-plot.igraph(gcont,edge.width=abs(E(gcont)$weight),edge.arrow.size=0.1,edge.arrow.width=1.5,edge.curved=0.2,
-            edge.color=E(gcont)$color, vertex.size=20,vertex.label.cex=1.5,vertex.label.color=colfast,
-            mark.groups=clucont,mark.col=colcont,layout=layout.circle, mark.border = "white")
-title(main="Fast species, control")
-text(-1,-1, paste("M=", round(modu3, digits=3), sep = ""), cex = 1.5)
-
-
-plot.igraph(gfun1,edge.width=abs(E(gfun)$weight),edge.arrow.size=0.1,edge.arrow.width=1.5,edge.curved=0.2,
-            edge.color=E(gfun1)$color, vertex.size=20,vertex.label.cex=1.5,vertex.label.color=colfast,
-            mark.groups=clufun,mark.col=colfun,layout=layout.circle, mark.border = "white")
-title(main="Fast species, fungicide")
-text(-1,-1, paste("M=", round(modu4, digits=3), sep = ""), cex = 1.5)
-
-```
-
-## b. Network metrics for communities of 5, 7, 11 and 15 species {-}
+## a. Network metrics for communities of 5, 7, 11 and 15 species {-}
 
 In order to check whether the size of the network will impact the effect of treatment, season or SLA and SLA variance on our network metrics, we looked at the effect of several network size (5, 7, 11, or 15 species). This code is heavy to run **and will take at least 4 hours** to be fully computed. Once again, you can simply load the output in the R environment "results/richness_data_5-7-11-15-18_species.Rdata". 
 
@@ -1433,14 +1401,18 @@ diagrichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datadiagpred)+
   geom_smooth(method = lm)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylab("Diagstrength")+
-  theme_bw()
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
 
 diagrichvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datadiagvpred)+
   facet_grid(~network.size)+
   geom_smooth(method = lm)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylab("Diagstrength")+
-  theme_bw()
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
 
 #Asymmetry
 lmod <- lFormula(Asymmetry~Nitrogen*Fungicide*network.size+Nitrogen*Fungicide*(SLA+SLAv)+(1|Species), data=allrich_data)
@@ -1457,14 +1429,18 @@ asymrichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=dataasympred)+
   geom_smooth(method = lm)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylab("Asymmetry")+
-  theme_bw()
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
 
 asymrichvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=dataasymvpred)+
   facet_grid(~network.size)+
   geom_smooth(method = lm)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylab("Asymmetry")+
-  theme_bw()
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
 
 #Skewness
 lmod <- lFormula(Skewness~Nitrogen*Fungicide*network.size+Nitrogen*Fungicide*(SLA+SLAv)+(1|Species), data=allrich_data)
@@ -1481,14 +1457,18 @@ skewrichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=dataskewpred)+
   geom_smooth(method = lm)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylab("Skewness")+
-  theme_bw()
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
 
 skewrichvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=dataskewvpred)+
   facet_grid(~network.size)+
   geom_smooth(method = lm)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylab("Skewness")+
-  theme_bw()
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
 
 #Evenness
 lmod <- lFormula(1-Gini~Nitrogen*Fungicide*network.size+Nitrogen*Fungicide*(SLA+SLAv)+(1|Species), data=allrich_data)
@@ -1505,14 +1485,18 @@ ginirichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=dataginipred)+
   geom_smooth(method = lm)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylab("Gini")+
-  theme_bw()
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
 
 ginirichvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=dataginivpred)+
   facet_grid(~network.size)+
   geom_smooth(method = lm)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylab("Gini")+
-  theme_bw()
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
 
 #Modularity
 lmod <- lFormula(Modularity~Nitrogen*Fungicide*network.size+Nitrogen*Fungicide*(SLA+SLAv)+(1|Species), data=allrich_data)
@@ -1529,14 +1513,18 @@ modurichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datamodupred)+
   geom_smooth(method = lm)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylab("Modularity")+
-  theme_bw()
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
 
 modurichvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datamoduvpred)+
   facet_grid(~network.size)+
   geom_smooth(method = lm)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylab("Modularity")+
-  theme_bw()
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
 
 
 save.image(file = "results/multimembership_results_richness_5-7-11-15-18_species.Rdata")
@@ -1549,9 +1537,9 @@ load(file ="results/multimembership_results_richness_5-7-11-15-18_species.Rdata"
 
 ```
 <br>
-From the results of these multimembership model, we can plot the Supplementary figure 5, which present the impact of treatment and SLA on mixed communities of different size across June and August 2020.
+From the results of these multimembership model, we can plot the Supplementary figure 6, which present the impact of treatment and SLA on mixed communities of different size across June and August 2020.
 <br>
-```{r, plot of supp fig. 5, fig.width = 14, fig.height = 16, fig.align ='center', echo=FALSE}
+```{r, plot of supp fig. 6, fig.width = 14, fig.height = 16, fig.align ='center', echo=FALSE}
 
 ggarrange(diagrichpred, 
           asymrichpred, 
@@ -1563,9 +1551,9 @@ ggarrange(diagrichpred,
 
 ```
 <br>
-And the Supplementary figure 6, which present the impact of treatment and SLA variance on mixed communities of different size across June and August 2020.
+And the Supplementary figure 7, which present the impact of treatment and SLA variance on mixed communities of different size across June and August 2020.
 <br>
-```{r, plot of supp fig. 6, fig.width = 14, fig.height = 16, fig.align ='center', echo=FALSE}
+```{r, plot of supp fig. 7, fig.width = 14, fig.height = 16, fig.align ='center', echo=FALSE}
 
 ggarrange(diagrichvpred, 
           asymrichvpred, 
@@ -1633,13 +1621,129 @@ modelsummary(modelist, statistic = NULL,
 
 ```
 
-## c. Individual species effect {-}
+## b. Individual species effect {-}
 
 In order to interpret in details the results of our multimembership models, we ran some extra analysis to detect any species effects.
 
+- insight on the treatment effect at the species level
+
+We wanted to test whether treatment impacted competition coefficients at the species level. For this, we plotted Supplementary figure 2, the change in competitive effect (response is also presented here) with treatment for every species. The black line represents the values that would be obtained if there was no impact of the treatments.The dotted colored lines represent the obtained values by treatment (the difference was not significant).
+
+```{r, species effect and response versus treatment}
+
+#difference of competitive effect by species with treatment
+bmatrix<-rowSums(alpha_june_control)
+bmatrixn<-rowSums(alpha_june_nitrogen)
+bmatrixf<-rowSums(alpha_june_fungicide)
+bmatrixnf<-rowSums(alpha_june_combined)
+bmatrixall<-data.frame(bmatrix,bmatrixn,bmatrixf, bmatrixnf)
+matsp<-rownames(bmatrixall)
+bmatrixall<-data.frame(bmatrix,bmatrixn,bmatrixf,bmatrixnf,matsp)
+#bmatrixall[6,]<-NA #check if Holcus lanatus is driving the pattern
+
+effect<-ggplot(data=bmatrixall,aes(x=bmatrix,y=bmatrixn))+
+  geom_smooth(aes(x=bmatrix,y=bmatrixn),method="lm",color="#7CAE00", alpha=0.3, fill="lightgray", linetype="dashed")+
+  geom_smooth(aes(x=bmatrix,y=bmatrixf),method="lm",color="#00BFC4", fill="lightgray", alpha=0.3, linetype="dashed")+
+  geom_smooth(aes(x=bmatrix,y=bmatrixnf),method="lm",color="#C77CFF", fill="lightgray", alpha=0.3, linetype="dashed")+
+  geom_point(color="#7CAE00")+
+  geom_text(aes(label=matsp),color="#7CAE00", hjust=1.5)+
+  geom_point(aes(x=bmatrix,y=bmatrixf), color="#00BFC4")+
+  geom_text(aes(x=bmatrix,y=bmatrixf,label=matsp), color="#00BFC4", hjust=1.5)+
+  geom_point(aes(x=bmatrix,y=bmatrixnf), color="#C77CFF")+
+  geom_text(aes(x=bmatrix,y=bmatrixnf,label=matsp), color="#C77CFF", hjust=1.5)+
+  geom_abline(intercept = 0, slope=1)+
+  xlim(c(-90,10))+ylim(c(-90,10))+
+  labs(title = "Competitive effect control vs. treatment June 2020", 
+       y="Competitive coefficient with treatment", x="Competitive effect in control conditions")+
+  scale_fill_manual(values = c("#7CAE00","#00BFC4"), labels=c("Nitrogen","Fungicide"),drop=FALSE)+
+  theme_clean()+
+  theme(plot.background=element_blank())
+
+amatrix<-colSums(alpha_june_control)
+amatrixn<-colSums(alpha_june_nitrogen)
+amatrixf<-colSums(alpha_june_fungicide)
+amatrixnf<-colSums(alpha_june_combined)
+amatrixall<-data.frame(amatrix,amatrixn,amatrixf,amatrixnf)
+matsp<-rownames(amatrixall)
+amatrixall<-data.frame(amatrix,amatrixn,amatrixf, amatrixnf, matsp)
+
+response<-ggplot(data=amatrixall,aes(x=amatrix,y=amatrixn))+
+  geom_smooth(method="lm",aes(color="Nitrogen"), fill="lightgray", alpha=0.3, linetype="dashed")+
+  geom_smooth(aes(x=amatrix,y=amatrixf,color="Fungicide"),method="lm", fill="lightgray", alpha=0.3, linetype="dashed")+
+  geom_smooth(aes(x=amatrix,y=amatrixnf,color="Combined"),method="lm", fill="lightgray", alpha=0.3, linetype="dashed")+
+  geom_point(color="#7CAE00")+
+  geom_text(aes(label=matsp),color="#7CAE00", hjust=1.5)+
+  geom_point(aes(x=amatrix,y=amatrixf), color="#00BFC4")+
+  geom_text(aes(x=amatrix,y=amatrixf,label=matsp), color="#00BFC4", hjust=1.5)+
+  geom_point(aes(x=amatrix,y=amatrixnf), color="#C77CFF")+
+  geom_text(aes(x=amatrix,y=amatrixnf,label=matsp), color="#C77CFF", hjust=1.5)+
+  geom_abline(intercept = 0, slope=1)+
+  xlim(c(-90,10))+ylim(c(-90,10))+
+  labs(title = "Competitive response control vs. treatment June 2020", 
+       y=" ", x="Competitive response in control conditions")+
+  scale_color_manual(name="Treatments",values = c(Nitrogen="#7CAE00",Fungicide="#00BFC4",Combined="#C77CFF"), breaks=c("Nitrogen","Fungicide", "Combined"))+
+  theme_clean()+
+  theme(plot.background=element_blank())
+```
+
+```{r, plot supplementary figure 2, fig.align ='center', fig.width=13, fig.height=8, echo = FALSE}
+
+ggarrange(effect, response, common.legend = T, legend = "right")
+
+```
+
+- comparison to the pairwise interactions level, effect of nitrogen vs. fungicide
+
+Thirdly, we wanted to investigate whether the pairwise competitive coefficients change similarly across nitrogen and fungicide. For this, we calculated the absolute differences between our interaction coefficients in June control vs. nitrogen, and June control vs. fungicide. The 1.1 line represent what we would have expected if changes were correlated. We highlighted 4 pairwise interaction to illustrate our result in supplementary figure 3:
+
+```{r, plot supp figure 3}
+#absolute value between nitrogen and control in June
+delta_contni_matrix<-abs(alpha_june_control-alpha_june_nitrogen)
+plot_alpha_delta_contni<-melt.array(delta_contni_matrix)
+
+#absolute value between fungicide and control in June
+delta_contfun_matrix<-abs(alpha_june_control-alpha_june_fungicide)
+plot_alpha_delta_contfun<-melt.array(delta_contfun_matrix)
+
+#gathering the two in one data.frame
+plot_alpha_delta_contnifun<-plot_alpha_delta_contni
+plot_alpha_delta_contnifun$value2<-plot_alpha_delta_contfun$value
+colnames(plot_alpha_delta_contnifun)<-c("sp1","sp2","control.vs.nitrogen","control.vs.fungicide")
+
+#selecting 4 pairwise interaction to illustrate the result
+selection<-subset(plot_alpha_delta_contnifun, plot_alpha_delta_contnifun$sp1=="Am"| plot_alpha_delta_contnifun$sp2=="Am")
+selection<-selection[selection$sp2=="Hl"|selection$sp2=="Ga"|selection$sp2 == "Ao" | selection$sp1 == "Ga",]
+rownames(selection)<-NULL
+
+figs9a<-ggplot(plot_alpha_delta_contnifun, aes(x=control.vs.nitrogen,y=control.vs.fungicide))+
+  geom_point(alpha=0.2, shape=16)+
+  geom_point(data=selection, aes(x=control.vs.nitrogen,y=control.vs.fungicide),
+             color="red", shape=16, size=2)+
+  annotate("text", x=selection$control.vs.nitrogen[1], y=selection$control.vs.fungicide[1]+0.15,
+           label=c("Ga_Am"), color="red")+
+  annotate("text", x=selection$control.vs.nitrogen[2], y=selection$control.vs.fungicide[2]+0.15,
+           label=c("Am_Ao"), color="red")+
+  annotate("text", x=selection$control.vs.nitrogen[3], y=selection$control.vs.fungicide[3]+0.15,
+           label=c("Am_Hl"), color="red")+
+  annotate("text", x=selection$control.vs.nitrogen[4], y=selection$control.vs.fungicide[4]+0.15,
+           label=c("Am_Ga"), color="red")+
+  geom_abline(intercept = 0, slope = 1, color = "grey")+
+  theme_bw()
+
+```
+
+```{r, plot supplementary figure 3, fig.align ='center', fig.width=7, fig.height=6, echo = FALSE}
+
+figs9a
+
+```
+
+
+## c. PaNDiv experiment whole field cover data {-}
+
 - insight on the fungicide effect
 
-First, we used PaNDiv experiment cover data from 2020, to fit a linear model between the species average competitive response and the change in their cover with fungicide addition in June 2020.
+We used PaNDiv experiment cover data from 2020, to fit a linear model between the species average competitive response and the change in their cover with fungicide addition in June 2020.
 
 ``` {r, fungicide competition response versus cover }
 #first, we need to do a little bit of data formatting from long to large cover data format
@@ -1748,130 +1852,14 @@ model<-lm(data=x,diff~bmatrix)
 summary(model)
 
 ```
-We can then plot Supplementary figure 6,
-```{r,plot supplementary figure 7, fig.align ='center', fig.height=10, fig.width=10, echo = FALSE}
+We can then plot Supplementary figure 9,
+```{r,plot supplementary figure 9, fig.align ='center', fig.height=10, fig.width=10, echo = FALSE}
 
 plot(x$diff~x$bmatrix, xlab= "Average competitive effect", ylab = "Change in %cover with Fungicide")
 text(x$diff~x$bmatrix,labels=row.names(x),pos=4)
 abline(model)
 
 ```
-
-- insight on the treatment effect at the species level
-
-Secondly, we wanted to test whether treatment impacted competition coefficients at the species level. For this, we plotted Supplementary figure 8, the change in competitive effect (response is also presented here) with treatment for every species. The black line represents the values that would be obtained if there was no impact of the treatments.The dotted colored lines represent the obtained values by treatment (the difference was not significant).
-
-```{r, species effect and response versus treatment}
-
-#difference of competitive effect by species with treatment
-bmatrix<-rowSums(alpha_june_control)
-bmatrixn<-rowSums(alpha_june_nitrogen)
-bmatrixf<-rowSums(alpha_june_fungicide)
-bmatrixnf<-rowSums(alpha_june_combined)
-bmatrixall<-data.frame(bmatrix,bmatrixn,bmatrixf, bmatrixnf)
-matsp<-rownames(bmatrixall)
-bmatrixall<-data.frame(bmatrix,bmatrixn,bmatrixf,bmatrixnf,matsp)
-#bmatrixall[6,]<-NA #check if Holcus lanatus is driving the pattern
-
-effect<-ggplot(data=bmatrixall,aes(x=bmatrix,y=bmatrixn))+
-  geom_smooth(aes(x=bmatrix,y=bmatrixn),method="lm",color="#7CAE00", alpha=0.3, fill="lightgray", linetype="dashed")+
-  geom_smooth(aes(x=bmatrix,y=bmatrixf),method="lm",color="#00BFC4", fill="lightgray", alpha=0.3, linetype="dashed")+
-  geom_smooth(aes(x=bmatrix,y=bmatrixnf),method="lm",color="#C77CFF", fill="lightgray", alpha=0.3, linetype="dashed")+
-  geom_point(color="#7CAE00")+
-  geom_text(aes(label=matsp),color="#7CAE00", hjust=1.5)+
-  geom_point(aes(x=bmatrix,y=bmatrixf), color="#00BFC4")+
-  geom_text(aes(x=bmatrix,y=bmatrixf,label=matsp), color="#00BFC4", hjust=1.5)+
-  geom_point(aes(x=bmatrix,y=bmatrixnf), color="#C77CFF")+
-  geom_text(aes(x=bmatrix,y=bmatrixnf,label=matsp), color="#C77CFF", hjust=1.5)+
-  geom_abline(intercept = 0, slope=1)+
-  xlim(c(-90,10))+ylim(c(-90,10))+
-  labs(title = "Competitive effect with treatment June 2020", 
-       y="Competitive change with treatment : Nitrogen (green), Fungicide (blue), Combined (purple)", x="Competitive effect in control conditions")+
-  scale_fill_manual(values = c("#7CAE00","#00BFC4"), labels=c("Nitrogen","Fungicide"),drop=FALSE)+
-  theme_clean()+
-  theme(plot.background=element_blank())
-
-amatrix<-colSums(alpha_june_control)
-amatrixn<-colSums(alpha_june_nitrogen)
-amatrixf<-colSums(alpha_june_fungicide)
-amatrixnf<-colSums(alpha_june_combined)
-amatrixall<-data.frame(amatrix,amatrixn,amatrixf,amatrixnf)
-matsp<-rownames(amatrixall)
-amatrixall<-data.frame(amatrix,amatrixn,amatrixf, amatrixnf, matsp)
-
-response<-ggplot(data=amatrixall,aes(x=amatrix,y=amatrixn))+
-  geom_smooth(method="lm",color="#7CAE00", fill="lightgray", alpha=0.3, linetype="dashed")+
-  geom_smooth(aes(x=amatrix,y=amatrixf),method="lm",color="#00BFC4", fill="lightgray", alpha=0.3, linetype="dashed")+
-  geom_smooth(aes(x=amatrix,y=amatrixnf),method="lm",color="#C77CFF", fill="lightgray", alpha=0.3, linetype="dashed")+
-  geom_point(color="#7CAE00")+
-  geom_text(aes(label=matsp),color="#7CAE00", hjust=1.5)+
-  geom_point(aes(x=amatrix,y=amatrixf), color="#00BFC4")+
-  geom_text(aes(x=amatrix,y=amatrixf,label=matsp), color="#00BFC4", hjust=1.5)+
-  geom_point(aes(x=amatrix,y=amatrixnf), color="#C77CFF")+
-  geom_text(aes(x=amatrix,y=amatrixnf,label=matsp), color="#C77CFF", hjust=1.5)+
-  geom_abline(intercept = 0, slope=1)+
-  xlim(c(-90,10))+ylim(c(-90,10))+
-  labs(title = "Competitive response with treatment June 2020", 
-       y=" ", x="Competitive response in control conditions")+
-  scale_color_manual(name="Treatments",values = c("#7CAE00","#00BFC4"), breaks=c("Nitrogen","Fungicide"))+
-  theme_clean()+
-  theme(plot.background=element_blank())
-```
-
-```{r, plot supplementary figure 8, fig.align ='center', fig.width=13, fig.height=8, echo = FALSE}
-
-ggarrange(effect, response)
-
-```
-
-- comparison to the pairwise interactions level, effect of nitrogen vs. fungicide
-
-Thirdly, we wanted to investigate whether the pairwise competitive coefficients change similarly across nitrogen and fungicide. For this, we calculated the absolute differences between our interaction coefficients in June control vs. nitrogen, and June control vs. fungicide. The 1.1 line represent what we would have expected if changes were correlated. We highlighted 4 pairwise interaction to illustrate our result in supplementary figure 9:
-
-```{r, plot supp figure 9}
-#absolute value between nitrogen and control in June
-delta_contni_matrix<-abs(alpha_june_control-alpha_june_nitrogen)
-plot_alpha_delta_contni<-melt.array(delta_contni_matrix)
-
-#absolute value between fungicide and control in June
-delta_contfun_matrix<-abs(alpha_june_control-alpha_june_fungicide)
-plot_alpha_delta_contfun<-melt.array(delta_contfun_matrix)
-
-#gathering the two in one data.frame
-plot_alpha_delta_contnifun<-plot_alpha_delta_contni
-plot_alpha_delta_contnifun$value2<-plot_alpha_delta_contfun$value
-colnames(plot_alpha_delta_contnifun)<-c("sp1","sp2","control.vs.nitrogen","control.vs.fungicide")
-
-#selecting 4 pairwise interaction to illustrate the result
-selection<-subset(plot_alpha_delta_contnifun, plot_alpha_delta_contnifun$sp1=="Am"| plot_alpha_delta_contnifun$sp2=="Am")
-selection<-selection[selection$sp2=="Hl"|selection$sp2=="Ga"|selection$sp2 == "Ao" | selection$sp1 == "Ga",]
-rownames(selection)<-NULL
-
-figs9a<-ggplot(plot_alpha_delta_contnifun, aes(x=control.vs.nitrogen,y=control.vs.fungicide))+
-  geom_point(alpha=0.2, shape=16)+
-  geom_point(data=selection, aes(x=control.vs.nitrogen,y=control.vs.fungicide),
-             color="red", shape=16, size=2)+
-  annotate("text", x=selection$control.vs.nitrogen[1], y=selection$control.vs.fungicide[1]+0.15,
-           label=c("Ga_Am"), color="red")+
-  annotate("text", x=selection$control.vs.nitrogen[2], y=selection$control.vs.fungicide[2]+0.15,
-           label=c("Am_Ao"), color="red")+
-  annotate("text", x=selection$control.vs.nitrogen[3], y=selection$control.vs.fungicide[3]+0.15,
-           label=c("Am_Hl"), color="red")+
-  annotate("text", x=selection$control.vs.nitrogen[4], y=selection$control.vs.fungicide[4]+0.15,
-           label=c("Am_Ga"), color="red")+
-  geom_abline(intercept = 0, slope = 1, color = "grey")+
-  theme_bw()
-
-```
-
-```{r, plot supplementary figure 9, fig.align ='center', fig.width=7, fig.height=6, echo = FALSE}
-
-figs9a
-
-```
-
-
-## d. PaNDiv SLA shift with treatment {-}
 
 Lastly, we used PaNDiv SLA data in order to check the plots shift in SLA with nitrogen treatment (monocultures were excluded). A negative Delta_SLA means that communities are shifting toward lower values of SLA, and that they become more slow growing.
  
@@ -1926,7 +1914,7 @@ a1 <- ggplot(SLA_datac, aes(x=Year, y=Delta_SLA, colour=Treatment, group=Treatme
         axis.line = element_line(colour = "black") )
 ```
 
-```{r, plot supplementary figure 10, fig.align ='center', fig.width=8, fig.height=8, echo = FALSE}
+```{r, plot supplementary figure 8, fig.align ='center', fig.width=8, fig.height=8, echo = FALSE}
 
 a1
 
