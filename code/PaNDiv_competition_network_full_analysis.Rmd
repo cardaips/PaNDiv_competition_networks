@@ -683,6 +683,49 @@ ggarrange(contau, niau, funau, combau, common.legend = T, ncol = 2, nrow =2)
 
 ```
 
+Using the same data on the raw plant interactions, we can plot supplementary figure 2 and 3, the histograms of plant interactions, respectively competitive effects and responses (all treatments combined).
+
+```{r, supplementary figure 2 and 3 interaction histograms, fig.width = 8, fig.height = 8, fig.align ='center'}
+#save the effects together in a dataframe
+all_matrices_effect<-as.data.frame(rbind(t(alpha_june_control),t(alpha_june_nitrogen),t(alpha_june_fungicide),t(alpha_june_combined),
+                            t(alpha_august_control),t(alpha_august_nitrogen),t(alpha_august_fungicide),t(alpha_august_combined)))
+rownames(all_matrices_effect)<-NULL
+
+all_matrices_effect<-all_matrices_effect %>% 
+  pivot_longer(colnames(all_matrices_effect))
+#highlight the extremes in effect (high)
+all_matrices_effect$extreme<-with(all_matrices_effect, ifelse(name=="Hl", 0,1))
+all_matrices_effect$extreme<-as.factor(all_matrices_effect$extreme)
+
+hist_comp_effect<-ggplot(all_matrices_effect, aes(x=value, fill=extreme))+
+  geom_histogram(color="white")+
+  facet_wrap(~ name)+
+  geom_vline(xintercept = mean(all_matrices_effect$value), linetype="dashed", linewidth= 1, color="blue")+
+  theme_classic()+
+  theme(legend.position = "none")
+hist_comp_effect
+
+#save the responses together in a dataframe
+all_matrices_response<-as.data.frame(rbind(alpha_june_control,alpha_june_nitrogen,alpha_june_fungicide,alpha_june_combined,
+                            alpha_august_control,alpha_august_nitrogen,alpha_august_fungicide,alpha_august_combined))
+rownames(all_matrices_response)<-NULL
+
+all_matrices_response<-all_matrices_response %>% 
+  pivot_longer(colnames(all_matrices_response))
+#highlight the extremes in response (low)
+all_matrices_response$extreme<-with(all_matrices_response, ifelse(name=="Ra"|name=="Dc", 0,1))
+all_matrices_response$extreme<-as.factor(all_matrices_response$extreme)
+
+hist_comp_response<-ggplot(all_matrices_response, aes(x=value, fill=extreme))+
+  geom_histogram(color="white")+
+  facet_wrap(~ name)+
+  geom_vline(xintercept = mean(all_matrices_response$value), linetype="dashed", linewidth= 1, color="blue")+
+  theme_classic()+
+  theme(legend.position = "none")
+hist_comp_response
+
+```
+
 ## b. Loading SLA data {-}
 
 In order to distinguish fast growing species from slow growing species, we used data on the specific leaf area gathered on PaNDiv experiment monocultures in 2019. We log transformed the value in order to remove the correlation between mean SLA and variance SLA.
@@ -847,7 +890,7 @@ comp$Species<-Species
 
 Running the models and their prediction **takes about 45 min**, if you are just interested in the output, you can load the image file below.
 
-This code presents the average effect across June and August 2020, but you can also look at the results on the two sampling periods separately and obtain the Supplementary figures 4 and 5. 
+This code presents the average effect across June and August 2020, but you can also look at the results on the two sampling periods separately and obtain the Supplementary figures 6 and 7. 
 
 - Diagonal dominance (D)
 ``` {r,multimembership model diagonal dominance, eval = FALSE}
@@ -1187,8 +1230,8 @@ ggarrange(diagpred,diagvpred,
           common.legend = T, label.x = " ", ncol=2,nrow=5)
 ```
 
-We can also plot the two seasons separately to obtain figs. S4 and S5:
-```{r, plot of supp fig. 4 and 5, fig.width = 8, fig.height = 14, fig.align ='center', echo = FALSE }
+We can also plot the two seasons separately to obtain figs. S6 and S7:
+```{r, plot of supp fig. 6 and 7, fig.width = 8, fig.height = 14, fig.align ='center', echo = FALSE }
 ggarrange(season_diagpred,
           season_asympred,
           season_skewpred,
@@ -1545,9 +1588,9 @@ load(file ="results/multimembership_results_richness_5-7-11-15-18_species.Rdata"
 
 ```
 <br>
-From the results of these multimembership model, we can plot the Supplementary figure 6, which present the impact of treatment and SLA on mixed communities of different size across June and August 2020.
+From the results of these multimembership model, we can plot the Supplementary figure 8, which present the impact of treatment and SLA on mixed communities of different size across June and August 2020.
 <br>
-```{r, plot of supp fig. 6, fig.width = 14, fig.height = 16, fig.align ='center', echo=FALSE}
+```{r, plot of supp fig. 8, fig.width = 14, fig.height = 16, fig.align ='center', echo=FALSE}
 
 ggarrange(diagrichpred, 
           asymrichpred, 
@@ -1559,9 +1602,9 @@ ggarrange(diagrichpred,
 
 ```
 <br>
-And the Supplementary figure 7, which present the impact of treatment and SLA variance on mixed communities of different size across June and August 2020.
+And the Supplementary figure 9, which present the impact of treatment and SLA variance on mixed communities of different size across June and August 2020.
 <br>
-```{r, plot of supp fig. 7, fig.width = 14, fig.height = 16, fig.align ='center', echo=FALSE}
+```{r, plot of supp fig. 9, fig.width = 14, fig.height = 16, fig.align ='center', echo=FALSE}
 
 ggarrange(diagrichvpred, 
           asymrichvpred, 
@@ -1635,7 +1678,7 @@ In order to interpret in details the results of our multimembership models, we r
 
 - insight on the treatment effect at the species level
 
-We wanted to test whether treatment impacted competition coefficients at the species level. For this, we plotted Supplementary figure 2, the change in competitive effect (response is also presented here) with treatment for every species. The black line represents the values that would be obtained if there was no impact of the treatments.The dotted colored lines represent the obtained values by treatment (the difference was not significant).
+We wanted to test whether treatment impacted competition coefficients at the species level. For this, we plotted Supplementary figure 4, the change in competitive effect (response is also presented here) with treatment for every species. The black line represents the values that would be obtained if there was no impact of the treatments.The dotted colored lines represent the obtained values by treatment (the difference was not significant).
 
 ```{r, species effect and response versus treatment}
 
@@ -1694,7 +1737,7 @@ response<-ggplot(data=amatrixall,aes(x=amatrix,y=amatrixn))+
   theme(plot.background=element_blank())
 ```
 
-```{r, plot supplementary figure 2, fig.align ='center', fig.width=13, fig.height=8, echo = FALSE}
+```{r, plot supplementary figure 4, fig.align ='center', fig.width=13, fig.height=8, echo = FALSE}
 
 ggarrange(effect, response, common.legend = T, legend = "right")
 
@@ -1702,9 +1745,9 @@ ggarrange(effect, response, common.legend = T, legend = "right")
 
 - comparison to the pairwise interactions level, effect of nitrogen vs. fungicide
 
-Thirdly, we wanted to investigate whether the pairwise competitive coefficients change similarly across nitrogen and fungicide. For this, we calculated the absolute differences between our interaction coefficients in June control vs. nitrogen, and June control vs. fungicide. The 1.1 line represent what we would have expected if changes were correlated. We highlighted 4 pairwise interaction to illustrate our result in supplementary figure 3:
+Thirdly, we wanted to investigate whether the pairwise competitive coefficients change similarly across nitrogen and fungicide. For this, we calculated the absolute differences between our interaction coefficients in June control vs. nitrogen, and June control vs. fungicide. The 1.1 line represent what we would have expected if changes were correlated. We highlighted 4 pairwise interaction to illustrate our result in supplementary figure 5:
 
-```{r, plot supp figure 3}
+```{r, plot supp figure 5}
 #absolute value between nitrogen and control in June
 delta_contni_matrix<-abs(alpha_june_control-alpha_june_nitrogen)
 plot_alpha_delta_contni<-melt.array(delta_contni_matrix)
@@ -1740,7 +1783,7 @@ figs9a<-ggplot(plot_alpha_delta_contnifun, aes(x=control.vs.nitrogen,y=control.v
 
 ```
 
-```{r, plot supplementary figure 3, fig.align ='center', fig.width=7, fig.height=6, echo = FALSE}
+```{r, plot supplementary figure 5, fig.align ='center', fig.width=7, fig.height=6, echo = FALSE}
 
 figs9a
 
@@ -1860,8 +1903,8 @@ model<-lm(data=x,diff~bmatrix)
 summary(model)
 
 ```
-We can then plot Supplementary figure 9,
-```{r,plot supplementary figure 9, fig.align ='center', fig.height=10, fig.width=10, echo = FALSE}
+We can then plot Supplementary figure 11,
+```{r,plot supplementary figure 11, fig.align ='center', fig.height=10, fig.width=10, echo = FALSE}
 
 plot(x$diff~x$bmatrix, xlab= "Average competitive effect", ylab = "Change in %cover with Fungicide")
 text(x$diff~x$bmatrix,labels=row.names(x),pos=4)
@@ -1878,6 +1921,11 @@ Lastly, we used PaNDiv SLA data in order to check the plots shift in SLA with ni
 SLA_data <- read_excel("data/SLA shift.xlsx")
 SLA_data$Delta_SLA<-as.numeric(SLA_data$Delta_SLA)
 SLA_data <- na.omit(SLA_data)
+compo<-read.table("data/info_plot.txt",sep="\t", header=T)
+compo$Plot<-compo$Plot_Nr
+compo$Plot_Nr<-NULL
+compo$Block<-NULL
+SLA_data<-merge(SLA_data,compo, by = "Plot")
 
 #add the treatment in the right format (4-level factor)
 SLA_data$Treatment<-NA
@@ -1902,6 +1950,27 @@ SLA_data$Treatment<-factor(SLA_data$Treatment, levels = c("C","N","F","NF"))
 
 SLA_datac <- Rmisc::summarySE(SLA_data, measurevar="Delta_SLA", groupvars=c("Treatment","Year")) ##sd,seֵ
 
+#some mixed modelling
+#modify year for model
+SLA_data$Year[SLA_data$Year==2016]<--3
+SLA_data$Year[SLA_data$Year==2017]<--2
+SLA_data$Year[SLA_data$Year==2018]<--1
+SLA_data$Year[SLA_data$Year==2019]<-0
+SLA_data$Year[SLA_data$Year==2020]<-1
+SLA_data$Year[SLA_data$Year==2021]<-2
+SLA_data$Year[SLA_data$Year==2022]<-3
+
+SLA_data$composition<-as.factor(SLA_data$composition)
+
+#mixed modelling
+sla_shift_model<-lmer(Delta_SLA~Nitrogen*Fungicide*Year+(1|Plot/Block)+(1|Year)+(1|composition), data=SLA_data)
+
+m<-modelsummary(list("(b)"=sla_shift_model),statistic = NULL,
+             estimate = "{estimate}{stars} ({p.value})",
+             fmt = fmt_statistic(estimate = 2, p.value = 3),
+             coef_omit = NULL,
+             stars = T)
+m
 #removing useless treatments, remove the following lines if you also want to look at fungicide and combined effect
 #SLA_datac[SLA_datac$Treatment=="F",]<-NA
 #SLA_datac<-na.omit(SLA_datac)
@@ -1914,6 +1983,7 @@ a1 <- ggplot(SLA_datac, aes(x=Year, y=Delta_SLA, colour=Treatment, group=Treatme
   geom_point(position=pd, size=3)+
   theme_bw()+
   #scale_colour_manual(values = c("#F8766D", "#7CAE00"))+
+  ggtitle("(a)")+
   theme(panel.grid = element_blank(),
         panel.background = element_blank(),
         panel.border = element_blank(),
@@ -1922,7 +1992,7 @@ a1 <- ggplot(SLA_datac, aes(x=Year, y=Delta_SLA, colour=Treatment, group=Treatme
         axis.line = element_line(colour = "black") )
 ```
 
-```{r, plot supplementary figure 8, fig.align ='center', fig.width=8, fig.height=8, echo = FALSE}
+```{r, plot supplementary figure 10, fig.align ='center', fig.width=8, fig.height=8, echo = FALSE}
 
 a1
 
