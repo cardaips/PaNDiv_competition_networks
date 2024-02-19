@@ -607,7 +607,7 @@ plot_alpha_june_combined<-plot_alpha_june_combined[plot_alpha_june_combined$valu
 combju<-ggplot(plot_alpha_june_combined, aes(x = X1, y = X2)) + 
   geom_raster(aes(fill=value)) + 
   scale_fill_gradient2(low="darkblue",mid = "white", high="red", limits=c(-12,4)) +
-  labs(x="species", y="species", title="June Combined") +
+  labs(x="species", y="species", title="June Combined (Nitrogen + Fungicide)") +
   theme_bw() + theme(axis.text.x=element_text(size=9, 
                                  angle=0, 
                                  vjust=0.3, 
@@ -666,7 +666,7 @@ plot_alpha_august_combined<-plot_alpha_august_combined[plot_alpha_august_combine
 combau<-ggplot(plot_alpha_august_combined, aes(x = X1, y = X2)) + 
   geom_raster(aes(fill=value)) + 
   scale_fill_gradient2(low="darkblue",mid = "white", high="red", limits=c(-12,4)) +
-  labs(x="species", y="species", title="August combined") +
+  labs(x="species", y="species", title="August combined (nitrogen + fungicide)") +
   theme_bw() + theme(axis.text.x=element_text(size=9, angle=0, vjust=0.3, color = colorsp),
                      axis.text.y=element_text(size=9, color = rev(colorsp)),
                      axis.title.y = element_blank(),
