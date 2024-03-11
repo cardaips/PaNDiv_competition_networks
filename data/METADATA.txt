@@ -1,0 +1,78 @@
+## Guide to the code folder associated with "Fast-slow traits predict competition network structure and its response to resources and enemies." ##
+
+author: Caroline DANIEL (contact: caroline.daniel@unibe.ch)
+date: 11-03-2024
+
+This file contains information on the data available for the publication of "Fast-slow traits predict competition network structure and its response to resources and enemies.", is repertoriates all abbreviations of data file names and gives information on the different units in which the data was measured.
+
+(1) data on the experimental design
+
+(a) plot_all.txt
+This text file contains several types of information on the experimental design:
+
+- Block: from 1 to 4, PaNDiv experiment is composed of 4 block that contains one replicate of the specific species composition (see unique.composition.id).
+- Plot_Nr: from 1 to 336, number of 2x2m plot in which all sampling occur.
+- composition: number+functional.composition or species abbreviation (if monoculture) or 20+number (if 20 species plot) unique species composition identity that is replicated in each block (for species abbreviations, see Table S1 of the publication).
+- FD: functional diversity. S (slow), F (fast) or M (mixed), functional composition of the species composing the plot.
+- SD: species diversity. 1, 4, 8 or 20, number of species in the plot (weeds excluded).
+- N: nitrogen addition. 0=no, 1=yes, whether or not the plot is treated with nitrogen (100g-1-ha-1year-1).
+- F: fungicide addition. 0=no, 1=yes, whether or not the plot is treated with fungicide ("Score Profi", 24.8 % Difenoconazol 179 250 g.L-1 and "Heritage Flow", 22.8% Azoxystrobin 400 g.L-1, applied 4 times a year).
+(See Pichon et al. 2020 for more information on the experimental design)
+
+(b) info_plot.txt
+See previous file description: Block, Plot_Nr and composition are also present in this file, in which only plots that are part of the main experiment (216 out of 336 plots) are listed. 
+
+(2) plot-level data
+
+(a) percentage cover: 202005_perco.txt
+This file contains the percentage cover data sampled in PaNDiv experiment in May 2020
+
+- Date: date of the sampling in the format YEAR-MONTH-DAY all attached.
+- Person: name of the person that sampled the cover data.
+- Block: see data on the experimental design.
+- PLot_Nr: see data on the experimental design.
+- Weed_species: species name found in the plot (for species abbreviations, see Table S1 of the publication). If a species name is not present, it means that it is not part of the initial target composition and it's then included in the "weeds" category, i.e. "legume", "grass" or "herb".
+- %weeded: percentage cover of the weeded part of the experiment. From 0 to unlimited %, how much a given species covers the plot, it can be more than 100% if the species is forming several layers.
+- Comments: any comment noted during the sampling.
+
+(b) SLA data: SLA_PaNDiv_2016-2019.txt
+This file contains a compilation of specific leaf area (SLA) data sampled in PaNDiv monoculture plots between 2016 and 2019. 
+
+- Plot_Nr: see data on the experimental design. Note that for SLA, data was sampled in monoculture plots only.
+- sampling period: date of the sampling in the format Day/Month/Year 
+- Species: sampled species name (for species abbreviations, see Table S1 of the publication)
+- mean_SLA: mean value of specific leaf area (SLA) sampled for this individual in their monoculture plot in g.m-2. for more information on the sampling, see Supplementary method 1. NA means missing measurement for this individual.
+- mean_LDMC: data not used in this study, sampled simultaneously to SLA
+- Block: see data on the experimental design (plot_all.txt). Data on experimental design was merged with SLA data, in order to check that no data was missing.
+- N: see data on the experimental design (plot_all.txt).
+- F: see data on the experimental design (plot_all.txt).
+- SD: see data on the experimental design (plot_all.txt).
+- FD: see data on the experimental design (plot_all.txt).
+- composition: see data on the experimental design (plot_all.txt).
+
+(c) Shift in SLA: SLA shift.txt
+This file contains the specific leaf area data sampled on PaNDiv communities plots between 2016 and 2022, with calculations of the deviation from the sown SLA.
+
+- Year: 2016 to 2022. Year of the SLA sampling.
+- BLock: see data on the experimental design (plot_all.txt).
+- PLot: see Plot_Nr, in data on the experimental design (plot_all.txt).
+- Nitrogen: see N, in data on the experimental design (plot_all.txt).
+- Fungicide: see F, in data on the experimental design (plot_all.txt).
+- SLA: measure of SLA in communities plots in g.m-2. NA means missing measurement for this plot. 
+- Sown_SLA: measure of SLA in communities plots in g.m-2. if the abundance of each species was equal to the abundance sown at the beginning of the experiment in 2016. NA means missing measurement for this plot. 
+- Delta_SLA: difference between Sown_SLA and SLA.
+
+(3) species interaction data ("biommatrix" files)
+
+(a) estimates of species interaction
+Files which names are a variation of: "biommatrix_month_year_treatment.txt" contain information on the estimates of species interactions obtained with our phytometer experiment (see Material and Methods of the publication for more information). 
+They  come in the form of 18 x 18 matrices with columns and rows names being the abbreviated version of each species present in our experiment (see Table S1 of the publication for the list of abbreviations).
+Interactions coefficients can be negative (competition) or positive (facilitation), and they represent the coefficient of a negative binomial regression of the biomass of the focal phytometer with the cover of a specific neighbour species. As they are equivalent to a ratio, they don't have a unit.
+
+(b) standard deviation of species interaction
+Files which names are a variation of: "SE_biommatrix_month_year_treatment.txt" contain information on the standard deviation corresponding to each respective interaction coefficient obtained with our phytometer experiment. 
+They come in the form of 18 x 18 matrices with columns and rows names being the abbreviated version of each species present in our experiment (see Table S1 of the publication for the list of abbreviations).
+They are strictly positive and represent the uncertainty of each corresponding estimation of the pairwise interaction between two species, as such, they don't have a unit.
+
+
+

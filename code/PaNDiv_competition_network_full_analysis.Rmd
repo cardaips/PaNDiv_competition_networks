@@ -886,6 +886,8 @@ We then applied multimembership models to our "comp" dataset. To do so, we need 
 Species <- rep(LETTERS[1:18], length.out= nrow(comp))
 comp$Species<-Species
 
+mycol<-c("#000000" ,  "#6A9400", "#26CDFF", "#962EDC")
+
 ```
 
 Running the models and their prediction **takes about 45 min**, if you are just interested in the output, you can load the image file below.
@@ -923,6 +925,7 @@ season_diagpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=season_datapre
   ylim(c(-9,-4.5))+ #might need to change it if scaled
   xlab(" ")+
   theme_bw()+
+  scale_color_manual(values = mycol)+
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
 
@@ -933,6 +936,7 @@ diagpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
   ylim(c(-9,-4.5))+ #might need to change it if scaled
   xlab(" ")+
   theme_bw()+
+  scale_color_manual(values = mycol)+
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
 
@@ -944,6 +948,7 @@ season_diagvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=season_datav
   xlab(" ")+
   ylab("Diagonal dominance")+
   theme_bw()+
+  scale_color_manual(values = mycol)+
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
 
@@ -954,9 +959,9 @@ diagvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
   xlab(" ")+
   ylab(" ")+
   theme_bw()+
+  scale_color_manual(values = mycol)+
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
-
 
 ```
 
@@ -987,6 +992,7 @@ season_asympred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=season_datapre
   ylab("Asymmetry")+
   xlab(" ")+
   theme_bw()+
+  scale_color_manual(values = mycol)+
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
 
@@ -997,6 +1003,7 @@ asympred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
   ylab("Asymmetry")+
   xlab(" ")+
   theme_bw()+
+  scale_color_manual(values = mycol)+
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
 
@@ -1008,6 +1015,7 @@ season_asymvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=season_datav
   ylab("Asymmetry")+
   xlab(" ")+
   theme_bw()+
+  scale_color_manual(values = mycol)+
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
 
@@ -1018,6 +1026,7 @@ asymvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
   ylab(" ")+
   xlab(" ")+
   theme_bw()+
+  scale_color_manual(values = mycol)+
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
 
@@ -1048,6 +1057,7 @@ season_skewpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=season_datapre
   ylab("Skewness")+
   xlab(" ")+
   theme_bw()+
+  scale_color_manual(values = mycol)+
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
 
@@ -1058,6 +1068,7 @@ skewpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
   ylab("Skewness")+
   xlab(" ")+
   theme_bw()+
+  scale_color_manual(values = mycol)+
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
 
@@ -1069,6 +1080,7 @@ season_skewvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=season_datav
   xlab(" ")+
   ylab("Skewness")+
   theme_bw()+
+  scale_color_manual(values = mycol)+
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
 
@@ -1079,6 +1091,7 @@ skewvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
   xlab(" ")+
   ylab(" ")+
   theme_bw()+
+  scale_color_manual(values = mycol)+
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
 
@@ -1109,6 +1122,7 @@ season_ginipred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=season_datapre
   ylab("Evenness")+
   xlab(" ")+
   theme_bw()+
+  scale_color_manual(values = mycol)+
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
 
@@ -1119,6 +1133,7 @@ ginipred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
   ylab("Evenness")+
   xlab(" ")+
   theme_bw()+
+  scale_color_manual(values = mycol)+
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
 
@@ -1130,6 +1145,7 @@ season_ginivpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=season_datav
   ylab("Evenness")+
   xlab(" ")+
   theme_bw()+
+  scale_color_manual(values = mycol)+
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
 
@@ -1140,6 +1156,7 @@ ginivpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
   ylab(" ")+
   xlab(" ")+
   theme_bw()+
+  scale_color_manual(values = mycol)+
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
 
@@ -1170,6 +1187,7 @@ season_modupred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=season_datapre
   ylab("Modularity")+
   ylim(c(0.05,0.2))+ #might need to change it if scaled
   theme_bw()+
+  scale_color_manual(values = mycol)+
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
 
@@ -1180,6 +1198,7 @@ modupred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datapred)+
   ylab("Modularity")+
   ylim(c(0.05,0.2))+ #might need to change it if scaled
   theme_bw()+
+  scale_color_manual(values = mycol)+
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
 
@@ -1192,6 +1211,7 @@ season_moduvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=season_datav
   xlab("SLA variance")+
   ylim(c(0.05,0.2))+ #might need to change it if scaled
   theme_bw()+
+  scale_color_manual(values = mycol)+
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
 
@@ -1203,6 +1223,7 @@ moduvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datavpred)+
   xlab("SLA variance")+
   ylim(c(0.05,0.2))+ #might need to change it if scaled
   theme_bw()+
+  scale_color_manual(values = mycol)+
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())    
 
@@ -1453,6 +1474,7 @@ diagrichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datadiagpred)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylab("Diagstrength")+
   theme_bw()+
+  scale_color_manual(values = mycol)+
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
 
@@ -1462,6 +1484,7 @@ diagrichvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datadiagvpred)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylab("Diagstrength")+
   theme_bw()+
+  scale_color_manual(values = mycol)+
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
 
@@ -1481,6 +1504,7 @@ asymrichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=dataasympred)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylab("Asymmetry")+
   theme_bw()+
+  scale_color_manual(values = mycol)+
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
 
@@ -1490,6 +1514,7 @@ asymrichvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=dataasymvpred)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylab("Asymmetry")+
   theme_bw()+
+  scale_color_manual(values = mycol)+
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
 
@@ -1509,6 +1534,7 @@ skewrichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=dataskewpred)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylab("Skewness")+
   theme_bw()+
+  scale_color_manual(values = mycol)+
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
 
@@ -1518,6 +1544,7 @@ skewrichvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=dataskewvpred)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylab("Skewness")+
   theme_bw()+
+  scale_color_manual(values = mycol)+
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
 
@@ -1537,6 +1564,7 @@ ginirichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=dataginipred)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylab("Gini")+
   theme_bw()+
+  scale_color_manual(values = mycol)+
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
 
@@ -1546,6 +1574,7 @@ ginirichvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=dataginivpred)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylab("Gini")+
   theme_bw()+
+  scale_color_manual(values = mycol)+
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
 
@@ -1565,6 +1594,7 @@ modurichpred<-ggplot(aes(x=SLA, y=fit, colour=Treatment), data=datamodupred)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylab("Modularity")+
   theme_bw()+
+  scale_color_manual(values = mycol)+
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
 
@@ -1574,6 +1604,7 @@ modurichvpred<-ggplot(aes(x=SLAv, y=fit, colour=Treatment), data=datamoduvpred)+
   geom_ribbon(aes(ymin = lwr, ymax = upr), alpha = 0.1)+
   ylab("Modularity")+
   theme_bw()+
+  scale_color_manual(values = mycol)+
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
 
@@ -1918,7 +1949,7 @@ Lastly, we used PaNDiv SLA data in order to check the plots shift in SLA with ni
 
 ```{r}
 
-SLA_data <- read_excel("data/SLA shift.xlsx")
+SLA_data <- read.table("data/SLA shift.txt", header=T, sep="\t")
 SLA_data$Delta_SLA<-as.numeric(SLA_data$Delta_SLA)
 SLA_data <- na.omit(SLA_data)
 compo<-read.table("data/info_plot.txt",sep="\t", header=T)
@@ -1984,6 +2015,7 @@ a1 <- ggplot(SLA_datac, aes(x=Year, y=Delta_SLA, colour=Treatment, group=Treatme
   theme_bw()+
   #scale_colour_manual(values = c("#F8766D", "#7CAE00"))+
   ggtitle("(a)")+
+  scale_color_manual(values = mycol)+
   theme(panel.grid = element_blank(),
         panel.background = element_blank(),
         panel.border = element_blank(),
